@@ -1,0 +1,490 @@
+// ===================
+// © AngelaMos | 2026
+// archive.module.scss
+// ===================
+
+@use '@/styles/tokens' as *;
+
+$void: hsl(0, 0%, 5.5%);
+$bone: hsl(40, 11%, 89%);
+$bone-soft: hsla(40, 11%, 89%, 0.56);
+$bone-faint: hsla(40, 11%, 89%, 0.32);
+$accent: hsl(208, 12%, 53%);
+$accent-soft: hsla(208, 12%, 53%, 0.5);
+$line: hsla(40, 11%, 86%, 0.24);
+$line-soft: hsla(40, 11%, 86%, 0.1);
+
+$display: 'Cormorant', 'Playfair Display', Georgia, serif;
+$serif: 'Playfair Display', 'DM Serif Display', Georgia, serif;
+$mono: 'Space Mono', ui-monospace, 'SFMono-Regular', monospace;
+$sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+.svgDefs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.page {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-height: 100dvh;
+  background: $void;
+  color: $bone;
+  font-family: $sans;
+  overflow: hidden;
+}
+
+.poster {
+  position: relative;
+  width: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(
+      ellipse 90% 60% at 78% 8%,
+      hsla(208, 14%, 28%, 0.16) 0%,
+      transparent 60%
+    ),
+    $void;
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  max-width: 1500px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 2.6vmin 4% 9vh;
+  box-sizing: border-box;
+}
+
+.bracketTL,
+.bracketBR {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  z-index: 9;
+  pointer-events: none;
+}
+
+.bracketTL {
+  top: 2.4vmin;
+  left: 1.6%;
+  border-top: 1px solid $line;
+  border-left: 1px solid $line;
+}
+
+.bracketBR {
+  bottom: 2.4vmin;
+  right: 1.6%;
+  border-bottom: 1px solid $line;
+  border-right: 1px solid $line;
+}
+
+.halftone {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    circle,
+    hsla(0, 0%, 0%, 0.42) 0.5px,
+    transparent 1.1px
+  );
+  background-size: 3.5px 3.5px;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  filter: url(#strata-grain);
+  opacity: 0.92;
+  mix-blend-mode: overlay;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 128% 100% at 46% 40%,
+    transparent 54%,
+    hsla(0, 0%, 0%, 0.62) 100%
+  );
+  z-index: 5;
+  pointer-events: none;
+}
+
+.nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 12;
+  margin-bottom: clamp(3rem, 9vh, 7rem);
+}
+
+.brandGroup {
+  display: flex;
+  align-items: center;
+  gap: 1.4vmin;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover .brandMark,
+  &:focus-visible .brandMark {
+    color: $bone;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.brandMono {
+  font-family: $serif;
+  font-style: italic;
+  font-weight: 900;
+  font-size: clamp(1.1rem, 2.4vmin, 1.6rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: $bone;
+}
+
+.brandMark {
+  font-family: $mono;
+  font-size: clamp(0.5rem, 1vmin, 0.66rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: $bone-soft;
+  padding-left: 1.2vmin;
+  border-left: 1px solid $line-soft;
+  transition: color 200ms ease;
+}
+
+.navItems {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.2rem, 2.4vmin, 2.6rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink {
+  position: relative;
+  font-family: $mono;
+  font-size: clamp(0.5rem, 1vmin, 0.66rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: $bone-soft;
+  transition: color 200ms ease;
+
+  &:hover,
+  &:focus-visible {
+    color: $bone;
+    outline: none;
+  }
+}
+
+.navCurrent {
+  color: $bone;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: -0.9em;
+    top: 50%;
+    width: 4px;
+    height: 4px;
+    margin-top: -2px;
+    background: $accent;
+    border-radius: 50%;
+  }
+}
+
+.head {
+  position: relative;
+  z-index: 8;
+  margin-bottom: clamp(2.6rem, 7vh, 5rem);
+}
+
+.eyebrow {
+  display: block;
+  font-family: $mono;
+  font-size: 0.6rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: $accent-soft;
+  margin-bottom: 1.2rem;
+}
+
+.title {
+  margin: 0;
+  font-family: $display;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(3.4rem, 10vmin, 8rem);
+  line-height: 0.9;
+  letter-spacing: -0.005em;
+  color: $bone;
+}
+
+.titleInner {
+  position: relative;
+  display: inline-block;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: -2%;
+    right: -6%;
+    top: 62%;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      $accent-soft 6%,
+      $accent-soft 70%,
+      transparent 100%
+    );
+    transform: rotate(-1deg);
+    pointer-events: none;
+  }
+}
+
+.intro {
+  max-width: 34rem;
+  margin: 1.6rem 0 0;
+  font-family: $mono;
+  font-size: clamp(0.56rem, 1.02vmin, 0.7rem);
+  line-height: 1.85;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $bone-soft;
+}
+
+.vault {
+  position: relative;
+  z-index: 8;
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  gap: 2rem;
+  padding: 2.2rem 0.4rem;
+  border-top: 1px solid $line-soft;
+
+  &:last-child {
+    border-bottom: 1px solid $line-soft;
+  }
+}
+
+.entryMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding-top: 0.4rem;
+}
+
+.entryDate {
+  font-family: $mono;
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  color: $bone-soft;
+}
+
+.entryTag {
+  font-family: $mono;
+  font-size: 0.5rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: $bone-faint;
+  border: 1px solid $line-soft;
+  padding: 0.3rem 0.5rem;
+  width: fit-content;
+}
+
+.entryTagScript {
+  color: $accent;
+  border-color: $accent-soft;
+}
+
+.entryBody {
+  min-width: 0;
+}
+
+.entryTitle {
+  margin: 0;
+  font-family: $display;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1.7rem, 3.6vmin, 2.6rem);
+  line-height: 1;
+  color: $bone;
+}
+
+.entryNote {
+  margin: 0.9rem 0 0;
+  max-width: 38rem;
+  font-family: $serif;
+  font-style: italic;
+  font-size: clamp(0.95rem, 1.7vmin, 1.12rem);
+  line-height: 1.5;
+  color: $bone-soft;
+}
+
+.spell {
+  margin-top: 1.4rem;
+}
+
+.spellCmd {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+  text-align: left;
+  background: hsla(0, 0%, 0%, 0.36);
+  border: 1px solid $line;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  transition:
+    border-color 200ms ease,
+    background 200ms ease;
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    border-color: $accent-soft;
+    background: hsla(208, 14%, 20%, 0.22);
+  }
+}
+
+.prompt {
+  font-family: $mono;
+  font-size: 0.8rem;
+  color: $accent;
+  flex: 0 0 auto;
+}
+
+.code {
+  font-family: $mono;
+  font-size: clamp(0.6rem, 1.15vmin, 0.78rem);
+  letter-spacing: 0.02em;
+  color: $bone;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1 1 auto;
+}
+
+.copy {
+  font-family: $mono;
+  font-size: 0.5rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: $bone-faint;
+  flex: 0 0 auto;
+  transition: color 200ms ease;
+
+  .spellCmd:hover & {
+    color: $accent;
+  }
+}
+
+.hash {
+  display: block;
+  margin-top: 0.6rem;
+  font-family: $mono;
+  font-size: 0.52rem;
+  letter-spacing: 0.06em;
+  color: $bone-faint;
+  word-break: break-all;
+}
+
+.footer {
+  position: relative;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: clamp(3rem, 8vh, 6rem);
+  font-family: $mono;
+  font-size: clamp(0.5rem, 0.92vmin, 0.66rem);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: $bone-soft;
+}
+
+.footerLeft {
+  flex: 0 0 auto;
+}
+
+.footerCenter {
+  flex: 1 1 auto;
+  text-align: center;
+  color: $bone-faint;
+  letter-spacing: 0.2em;
+}
+
+.footerRight {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.9em;
+  flex: 0 0 auto;
+}
+
+.footerDash {
+  color: hsla(40, 9%, 70%, 0.5);
+}
+
+.footerNumber {
+  color: $bone-soft;
+}
+
+@media (max-width: 720px) {
+  .entry {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .entryMeta {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 0;
+  }
+
+  .code {
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .navItems {
+    gap: 1.1rem;
+  }
+
+  .footerCenter {
+    display: none;
+  }
+
+  .spellCmd {
+    flex-wrap: wrap;
+  }
+
+  .code {
+    white-space: normal;
+    word-break: break-all;
+  }
+}

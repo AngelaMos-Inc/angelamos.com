@@ -1,0 +1,33 @@
+# ©AngelaMos | 2026
+# .gitignore
+
+# Secrets / environment
+.env
+.env.*
+
+# Dependencies
+node_modules/
+frontend/node_modules/
+frontend/.pnpm-store/
+
+# Build output
+dist/
+frontend/dist/
+build/
+
+# Vite / tooling caches
+.vite/
+*.tsbuildinfo
+frontend/*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

@@ -1,0 +1,696 @@
+// ===================
+// © AngelaMos | 2026
+// contact.module.scss
+// ===================
+
+@use '@/styles/tokens' as *;
+
+$void: hsl(0, 0%, 5.5%);
+$bone: hsl(40, 9%, 90%);
+$bone-soft: hsla(40, 9%, 90%, 0.56);
+$bone-faint: hsla(40, 9%, 90%, 0.34);
+$bone-ghost: hsla(40, 9%, 90%, 0.16);
+$cold: hsl(202, 58%, 64%);
+$line: hsla(40, 9%, 88%, 0.30);
+$line-soft: hsla(40, 9%, 88%, 0.13);
+
+$display: 'Cormorant', 'Playfair Display', Georgia, serif;
+$serif: 'Playfair Display', 'DM Serif Display', Georgia, serif;
+$mono: 'Space Mono', ui-monospace, 'SFMono-Regular', monospace;
+$sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+.svgDefs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.page {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-height: 100dvh;
+  background: $void;
+  color: $bone;
+  font-family: $sans;
+  overflow: hidden;
+}
+
+.poster {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  min-height: 760px;
+  overflow: hidden;
+  isolation: isolate;
+  background: $void;
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  max-width: 1500px;
+  height: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.ghost {
+  position: absolute;
+  top: -8%;
+  right: -6%;
+  width: 62%;
+  max-width: 900px;
+  object-fit: contain;
+  filter: url(#audience-grade) brightness(0.7) contrast(1.05);
+  opacity: 0.09;
+  mix-blend-mode: screen;
+  transform: rotate(8deg);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bracketTL,
+.bracketBR {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  z-index: 9;
+  pointer-events: none;
+}
+
+.bracketTL {
+  top: 2.4vmin;
+  left: 1.6%;
+  border-top: 1px solid $line;
+  border-left: 1px solid $line;
+}
+
+.bracketBR {
+  bottom: 2.4vmin;
+  right: 1.6%;
+  border-bottom: 1px solid $line;
+  border-right: 1px solid $line;
+}
+
+.halftone {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    circle,
+    hsla(0, 0%, 0%, 0.46) 0.5px,
+    transparent 1.1px
+  );
+  background-size: 3.7px 3.7px;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  filter: url(#audience-grain);
+  opacity: 0.72;
+  mix-blend-mode: overlay;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 132% 96% at 42% 46%,
+    transparent 52%,
+    hsla(0, 0%, 0%, 0.6) 100%
+  );
+  z-index: 5;
+  pointer-events: none;
+}
+
+.nav {
+  position: absolute;
+  top: 2.6vmin;
+  left: 4%;
+  right: 4%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 12;
+}
+
+.brandGroup {
+  display: flex;
+  align-items: center;
+  gap: 1.4vmin;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover .brandMark,
+  &:focus-visible .brandMark {
+    color: $bone;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.brandMono {
+  font-family: $serif;
+  font-style: italic;
+  font-weight: 900;
+  font-size: clamp(1.1rem, 2.4vmin, 1.6rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: $bone;
+}
+
+.brandMark {
+  font-family: $mono;
+  font-size: clamp(0.5rem, 1vmin, 0.66rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: $bone-soft;
+  padding-left: 1.2vmin;
+  border-left: 1px solid $line-soft;
+}
+
+.navItems {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.2rem, 2.4vmin, 2.6rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink {
+  position: relative;
+  font-family: $mono;
+  font-size: clamp(0.5rem, 1vmin, 0.66rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: $bone-soft;
+  transition: color 200ms ease;
+
+  &:hover,
+  &:focus-visible {
+    color: $bone;
+    outline: none;
+  }
+}
+
+.navCurrent {
+  color: $bone;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: -0.9em;
+    top: 50%;
+    width: 4px;
+    height: 4px;
+    margin-top: -2px;
+    background: $cold;
+    border-radius: 50%;
+  }
+}
+
+.specimen {
+  position: absolute;
+  right: 3.4%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: clamp(220px, 25vw, 392px);
+  margin: 0;
+  z-index: 6;
+}
+
+.specimenFrame {
+  position: relative;
+  width: 100%;
+}
+
+.specimenImg {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: url(#audience-grade) brightness(1.04) contrast(1.08);
+  opacity: 0.92;
+}
+
+.reticle {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  width: 54px;
+  height: 54px;
+  margin: -27px 0 0 -27px;
+  pointer-events: none;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    background: $bone-soft;
+  }
+
+  &::before {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+  }
+
+  &::after {
+    left: 50%;
+    top: 0;
+    width: 1px;
+    height: 100%;
+  }
+}
+
+.tick {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  width: 13px;
+  height: 13px;
+  margin: -6.5px 0 0 -6.5px;
+  border: 1px solid $cold;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.specimenMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-top: 1.4rem;
+  padding-top: 1rem;
+  border-top: 1px solid $line-soft;
+}
+
+.specimenLabel {
+  font-family: $mono;
+  font-size: 0.62rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: $bone;
+}
+
+.specimenCaption {
+  font-family: $mono;
+  font-size: 0.58rem;
+  line-height: 1.7;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: justify;
+  color: $bone-soft;
+}
+
+.specimenPlate {
+  font-family: $mono;
+  font-size: 0.54rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: $bone-faint;
+}
+
+.composition {
+  position: absolute;
+  left: 4.5%;
+  top: 0;
+  bottom: 0;
+  width: 47%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(1.8rem, 3.6vmin, 3rem);
+  z-index: 8;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+}
+
+.eyebrow {
+  font-family: $mono;
+  font-size: 0.6rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: $bone-faint;
+  margin-bottom: 1.4rem;
+}
+
+.title {
+  margin: 0;
+  font-family: $display;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(3.6rem, 11vmin, 9rem);
+  line-height: 0.88;
+  letter-spacing: -0.005em;
+  color: $bone;
+  text-shadow: 0 2px 26px hsla(0, 0%, 0%, 0.6);
+}
+
+.titleInner {
+  position: relative;
+  display: inline-block;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: -2%;
+    right: -6%;
+    top: 60%;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      $bone-soft 6%,
+      $bone-soft 78%,
+      transparent 100%
+    );
+    transform: rotate(-1.4deg);
+    pointer-events: none;
+  }
+}
+
+.intro {
+  max-width: 30rem;
+  margin: 1.6rem 0 0;
+  font-family: $mono;
+  font-size: clamp(0.56rem, 1.06vmin, 0.72rem);
+  line-height: 1.85;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $bone-soft;
+}
+
+.letter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.line {
+  margin: 0;
+  font-family: $serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.05rem, 2.2vmin, 1.7rem);
+  line-height: 1.9;
+  color: $bone;
+}
+
+.word {
+  color: $bone;
+}
+
+.fill {
+  width: clamp(7rem, 16vw, 13rem);
+  margin: 0 0.45rem;
+  padding: 0 0.1rem 0.12rem;
+  font-family: $serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: inherit;
+  color: $cold;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid $line;
+  transition: border-color 200ms ease;
+
+  &::placeholder {
+    font-size: 0.62em;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-family: $mono;
+    font-style: normal;
+    color: $bone-faint;
+    vertical-align: middle;
+  }
+
+  &:focus {
+    outline: none;
+    border-bottom-color: $cold;
+  }
+}
+
+.fillWide {
+  width: clamp(9rem, 22vw, 17rem);
+}
+
+.fillBlock {
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.7rem 0.1rem;
+  font-family: $serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.05rem, 2.2vmin, 1.7rem);
+  line-height: 1.7;
+  color: $cold;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid $line;
+  resize: vertical;
+  min-height: 3.2rem;
+  transition: border-color 200ms ease;
+
+  &::placeholder {
+    color: $bone-faint;
+  }
+
+  &:focus {
+    outline: none;
+    border-bottom-color: $cold;
+  }
+}
+
+.send {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  margin-top: 1.6rem;
+}
+
+.request {
+  font-family: $mono;
+  font-size: 0.64rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: $bone;
+  background: transparent;
+  border: 1px solid $line;
+  padding: 0.95rem 1.7rem;
+  cursor: pointer;
+  transition:
+    border-color 220ms ease,
+    color 220ms ease,
+    background 220ms ease;
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    outline: none;
+    color: $void;
+    background: $bone;
+    border-color: $bone;
+  }
+
+  &:disabled {
+    color: $bone-faint;
+    border-color: $line-soft;
+    cursor: not-allowed;
+  }
+}
+
+.sendNote {
+  font-family: $mono;
+  font-size: 0.54rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: $bone-faint;
+}
+
+.sent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 2.4rem 0;
+}
+
+.sentLead {
+  font-family: $mono;
+  font-size: 0.6rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: $cold;
+}
+
+.sentBody {
+  margin: 0;
+  max-width: 26rem;
+  font-family: $display;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1.6rem, 3.4vmin, 2.6rem);
+  line-height: 1.35;
+  color: $bone;
+}
+
+.footer {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 3.4%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: $mono;
+  font-size: clamp(0.5rem, 0.92vmin, 0.66rem);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: $bone-soft;
+  z-index: 9;
+}
+
+.footerLeft {
+  flex: 0 0 auto;
+}
+
+.footerCenter {
+  flex: 1 1 auto;
+  text-align: center;
+  color: $bone-faint;
+  letter-spacing: 0.2em;
+}
+
+.footerRight {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.9em;
+  flex: 0 0 auto;
+}
+
+.footerDash {
+  color: hsla(40, 9%, 70%, 0.5);
+}
+
+.footerNumber {
+  color: $bone-soft;
+}
+
+@media (max-width: 1080px) {
+  .composition {
+    width: 52%;
+  }
+
+  .specimen {
+    width: clamp(180px, 24vw, 300px);
+    right: 3%;
+  }
+
+  .specimenCaption {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .poster {
+    height: auto;
+    min-height: 100dvh;
+  }
+
+  .stage {
+    height: auto;
+    min-height: 100dvh;
+  }
+
+  .ghost {
+    width: 96%;
+    top: 4%;
+    right: -18%;
+    opacity: 0.07;
+  }
+
+  .specimen {
+    position: absolute;
+    top: 8%;
+    right: 4%;
+    transform: none;
+    width: 38vw;
+    max-width: 220px;
+    opacity: 0.5;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .specimenMeta {
+    display: none;
+  }
+
+  .composition {
+    position: static;
+    width: auto;
+    margin: 0;
+    padding: 23vh 7% 16vh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    justify-content: center;
+  }
+
+  .intro {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .nav {
+    top: 3.2vmin;
+  }
+
+  .navItems {
+    gap: 1.1rem;
+  }
+
+  .specimen {
+    top: 6%;
+    width: 46vw;
+    opacity: 0.34;
+  }
+
+  .composition {
+    padding: 21vh 7% 18vh;
+  }
+
+  .line {
+    font-size: 1.15rem;
+    line-height: 1.95;
+  }
+
+  .fill {
+    width: 9rem;
+  }
+
+  .fillWide {
+    width: 12rem;
+  }
+
+  .fillBlock {
+    font-size: 1.15rem;
+  }
+
+  .footerCenter {
+    display: none;
+  }
+}

@@ -1,0 +1,1058 @@
+// ===================
+// © AngelaMos | 2026
+// landing.module.scss
+// ===================
+
+@use '@/styles/tokens' as *;
+
+$poster-bg: hsl(0, 0%, 6%);
+$poster-fg: hsl(0, 0%, 96%);
+$poster-muted: hsla(0, 0%, 100%, 0.55);
+$poster-line: hsla(0, 0%, 100%, 0.42);
+$poster-line-soft: hsla(0, 0%, 100%, 0.18);
+$poster-red: hsl(358, 70%, 46%);
+
+$banner-tilt: -1.8deg;
+
+.svgDefs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.page {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-height: 100dvh;
+  background: $poster-bg;
+  color: $poster-fg;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: hidden;
+}
+
+.poster {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  min-height: 720px;
+  overflow: hidden;
+  isolation: isolate;
+  background: $poster-bg;
+}
+
+// ---------- Composition stage (max-width cap) ----------
+//
+// `.stage` caps the composition at 1500px and centers it. Halftone, grain,
+// and vignette stay outside the stage so they span the full viewport — the
+// side strips inherit the exact same texture continuously, no visible seam.
+//
+// Important: `.stage` uses `position: relative` WITHOUT a z-index, so it
+// does NOT create a new stacking context. Its children's z-indexes still
+// participate in `.poster`'s stacking context — portrait (z:1) below
+// halftone (z:3), text elements (z:6+) above halftone/grain/vignette.
+
+.stage {
+  position: relative;
+  width: 100%;
+  max-width: 1500px;
+  height: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+// ---------- Portrait + treatment layers ----------
+
+.portraitBg {
+  display: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 28%;
+  filter: url(#poster-grade) brightness(0.15) contrast(0.99);
+  z-index: 0;
+}
+
+.portrait {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 28%;
+  filter: url(#poster-grade);
+  z-index: 1;
+}
+
+// ----- Responsive eye/banner alignment -----
+//
+// Why two levers: as the viewport widens, the portrait scales up (cover fills
+// width), which pulls eyes DOWN in the container. As the viewport narrows
+// below ~700px, the portrait stops scaling (cover now fills height), and OP
+// has no vertical effect — so banner has to come down instead. Numbers are
+// approximate; tweak the % values to taste, the 700/1100/1300 breakpoints
+// can also shift.
+
+// Note: narrow-viewport banner/headline/body adjustments live in the
+// consolidated narrow-tier media blocks at the bottom of this file.
+
+// Medium-wide — image scaling pulls eyes ~10px below banner. Push OP up to
+// drag eyes back to the banner line.
+
+
+// Wide — image scaled even more, eyes drift further. Push OP up more.
+@media (min-width: 1300px) {
+  .portrait {
+    object-position: 50% 30%;
+  }
+}
+
+@media (min-width: 1501px) {
+  .portraitBg {
+    display: block;
+  }
+
+  .portrait {
+    // Soft horizontal fade only inside the 1500px stage so the crisp portrait
+    // dissolves into the blurred portrait-bg at the edges instead of hard-cutting.
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 3%,
+      black 97%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 3%,
+      black 97%,
+      transparent 100%
+    );
+  }
+}
+
+.darkWash {
+  position: absolute;
+  inset: -2%;
+  background:
+    radial-gradient(
+      ellipse 115% 9.6% at 40% 40.0%,
+      transparent 0%,
+      transparent 50%,
+      hsla(0, 0%, 0%, 0.6) 68%,
+      hsla(0, 0%, 0%, 0.82) 100%
+    );
+    
+  transform-origin: 50% 50%;
+  transform: rotate($banner-tilt);   
+  z-index: 2;
+  pointer-events: none;
+}
+
+// ----- Halftone (responsive dot grid) -----
+//
+// Dots are in absolute px, so on smaller viewports they take up a larger
+// share of the screen and feel chunkier. Each tier below lets you tune the
+// dot core / fade / spacing independently for that viewport range.
+//
+// Tiers (cascade order matters — narrower queries come last and override):
+//   • DEFAULT  ≥ 781px (desktop / wide tablet)
+//   • TIER M   ≤ 780px (small tablet / large phone landscape)
+//   • TIER S   ≤ 550px (phone portrait)
+
+.halftone {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    circle,
+    hsla(0, 0%, 0%, 0.5) 0.5px,
+    transparent 1.1px
+  );
+  background-size: 3.7px 3.7px;
+  mix-blend-mode: multiply;
+  opacity: 0.90;
+  z-index: 3;
+  pointer-events: none;
+}
+
+
+
+@media (max-width: 805px) {
+  .halftone {
+    background-image: radial-gradient(
+      circle,
+      hsla(0, 0%, 0%, 0.6) 0.5px,
+      transparent 0.7px
+    );
+    background-size: 3.4px 3.4px;
+  }
+}
+
+@media (max-width: 550px) {
+  .halftone {
+    background-image: radial-gradient(
+      circle,
+      hsla(0, 0%, 0%, 0.5) 0.5px,
+      transparent 0.65px
+    );
+    background-size: 3.3px 3.3px;
+  }
+}
+
+
+
+
+.grain {
+  position: absolute;
+  inset: 0;
+  filter: url(#poster-grain);
+  opacity: 0.8;
+  mix-blend-mode: overlay;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 130% 95% at 50% 50%,
+      transparent 55%,
+      hsla(0, 0%, 0%, 0.55) 100%
+    );
+  z-index: 5;
+  pointer-events: none;
+}
+
+// ---------- Nav ----------
+
+.nav {
+  position: absolute;
+  top: 2.6vmin;
+  left: 4%;
+  right: 4%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 12;
+  pointer-events: auto;
+}
+
+.brandGroup {
+  display: flex;
+  align-items: center;
+  gap: 1.4vmin;
+}
+
+.brandMono {
+  font-family: 'Playfair Display', 'DM Serif Display', serif;
+  font-style: italic;
+  font-weight: 900;
+  font-size: clamp(1.1rem, 2.4vmin, 1.6rem);
+  line-height: 1;
+  color: $poster-fg;
+  letter-spacing: -0.02em;
+}
+
+.brandMark {
+  font-size: clamp(0.55rem, 1.05vmin, 0.7rem);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: $poster-muted;
+  padding-left: 1.2vmin;
+  border-left: 1px solid $poster-line-soft;
+}
+
+.navItems {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.2rem, 2.4vmin, 2.6rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink {
+  font-size: clamp(0.55rem, 1.05vmin, 0.7rem);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: $poster-muted;
+  transition: color 180ms ease;
+
+  &:hover,
+  &:focus-visible {
+    color: $poster-fg;
+    outline: none;
+  }
+}
+
+// ---------- Tilted banner group ----------
+
+.bannerGroup {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  transform: rotate($banner-tilt);
+  transform-origin: 50% 40%;
+  pointer-events: none;
+}
+
+.banner {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 32%;
+  height: 14.5%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 5% 1.4%;
+  background: hsla(0, 0%, 100%, 0.04);
+  border: 1px solid $poster-line;
+  border-left-color: $poster-line-soft;
+  border-right-color: $poster-line-soft;
+}
+
+.bannerWord {
+  font-family: 'Anton', 'Arial Narrow', Impact, sans-serif;
+  font-weight: 400;
+  font-size: clamp(1.4rem, 3vmin, 2.4rem);
+  letter-spacing: 0.35em;
+  color: $poster-fg;
+  text-transform: uppercase;
+  opacity: 0.95;
+  // shift right-aligned text's optical balance from added tracking
+  &:last-child {
+    padding-right: 0.35em;
+  }
+}
+
+.bannerBody {
+  position: absolute;
+  right: 8%;
+  top: 48%;
+  width: 26%;
+  margin: 0;
+  font-size: clamp(0.5rem, 1.1vmin, 0.75rem);
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  color: $poster-fg;
+  text-transform: uppercase;
+  opacity: 0.92;
+}
+
+// ---------- Headline + red block ----------
+
+.redBlock {
+  position: absolute;
+  left: 44%;
+  top: 60%;
+  width: 9%;
+  height: 16%;
+  background: $poster-red;
+  z-index: 7;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(
+      circle,
+      hsla(0, 0%, 0%, 0.65) 0.7px,
+      transparent 1.3px
+    );
+    background-size: 4px 4px;
+    mix-blend-mode: multiply;
+    opacity: 0.6;
+  }
+}
+
+.headline {
+  position: absolute;
+  left: 4%;
+  top: 60.5%;
+  margin: 0;
+  font-family: 'Playfair Display', 'DM Serif Display', 'Didot', Georgia, serif;
+  font-style: italic;
+  font-weight: 800;
+  font-size: clamp(3.2rem, 11.5vmin, 9.8rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: $poster-fg;
+  z-index: 8;
+  text-shadow: 0 2px 16px hsla(0, 0%, 0%, 0.45);
+}
+
+.headlineInner {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: -4%;
+    right: -4%;
+    top: 58%;
+    height: 1.5px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsla(0, 0%, 100%, 0.78) 8%,
+      hsla(0, 0%, 100%, 0.78) 92%,
+      transparent 100%
+    );
+    transform: rotate(-1.5deg);
+    transform-origin: 50% 50%;
+    pointer-events: none;
+    z-index: 2;
+  }
+}
+
+// ---------- Body copy ----------
+
+.bodyLeft {
+  position: absolute;
+  left: 4%;
+  top: 77%;
+  width: 30%;
+  margin: 0;
+  font-size: clamp(0.55rem, 1.15vmin, 0.78rem);
+  line-height: 1.55;
+  letter-spacing: 0.07em;
+  color: $poster-fg;
+  text-transform: uppercase;
+  z-index: 8;
+  opacity: 0.95;
+}
+
+.bodyRight {
+  position: absolute;
+  left: 44%;
+  top: 77%;
+  width: 14%;
+  margin: 0;
+  font-size: clamp(0.55rem, 1.15vmin, 0.78rem);
+  line-height: 1.55;
+  letter-spacing: 0.07em;
+  color: $poster-fg;
+  text-transform: uppercase;
+  z-index: 8;
+  opacity: 0.95;
+}
+
+// ---------- Footer ----------
+
+.footer {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 3.6%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: clamp(0.494rem, 0.5vmin, 0.72rem);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: $poster-muted;
+  z-index: 9;
+}
+
+.footerLeft {
+  flex: 0 0 auto;
+}
+
+.footerRight {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.9em;
+}
+
+.footerDash {
+  color: hsla(0, 0%, 70%, 0.55);
+}
+
+.footerNumber {
+  color: $poster-muted;
+}
+
+// ============================================================================
+// NARROW VIEWPORT TUNING
+//
+// Below ~750px the original composition (designed around ~900–1100px) starts
+// reading as too "square": banner gets tall relative to its width, the red
+// block lines up over the turtleneck and reads as a tie, the bodyRight column
+// gets so narrow it single-word-wraps, and the headline crowds the body text.
+//
+// Two cumulative tiers:
+//   • TIER A  ≤ 750px  — moderate rebalancing (banner more rectangular,
+//                        red block shrunk, body cols rebalanced)
+//   • TIER B  ≤ 520px  — phone-class rework (banner even shorter, red block
+//                        moved RIGHT to clear the neck axis entirely, more
+//                        even body column widths)
+//
+// Numbers are starting points — tweak any value without affecting others.
+// ============================================================================
+
+
+@media (min-width: 1200px) {
+  // Banner — more rectangular: shorter height, shorter bottom padding so the
+  // ONE/NONE text still reads inside the bar.
+  .banner {
+    top: 33%;
+    height: 16%;
+    padding: 0 5% 1%;
+  }
+
+  // ONE/NONE — tighter scale + tracking so the words still feel airy in the
+  // narrower banner.
+  .bannerWord {
+    font-size: clamp(1.9rem, 2.7vmin, 2rem);
+    letter-spacing: 0.22em;
+  }
+
+  // bannerBody (the small-caps right column) — pulled up under the shorter
+  // banner, wider column so the lines don't break on every word.
+  .bannerBody {
+    top: 51.5%;
+    right: 8.1%;
+    width: 16%;
+    font-size: clamp(0.62rem, 1.1vmin, 0.68rem);    
+  }
+  
+  .bodyLeft {
+    font-size: clamp(0.75em, 1.1vmin, 0.75rem);    
+  }
+
+  .redBlock {
+    top: 68%;
+    width: 7%;    
+    height: 20%;  
+  }      
+
+  .bodyRight {
+    left: 44%;
+    width: 23%;
+    top: 89.8%;
+    font-size: clamp(0.60rem, 1.05vmin, 0.72rem);
+  }
+
+}
+
+
+
+@media (max-width: 840px) {
+  // Banner — more rectangular: shorter height, shorter bottom padding so the
+  // ONE/NONE text still reads inside the bar.
+  .banner {
+    top: 32%;
+    height: 11.9%;
+    padding: 0 5% 1%;
+  }
+
+  // ONE/NONE — tighter scale + tracking so the words still feel airy in the
+  // narrower banner.
+  .bannerWord {
+    font-size: clamp(1.1rem, 2.7vmin, 1.2rem);
+    letter-spacing: 0.28em;
+  }
+
+  // bannerBody (the small-caps right column) — pulled up under the shorter
+  // banner, wider column so the lines don't break on every word.
+  .bannerBody {
+    top: 44.0%;
+    right: 8%;
+    width: 16%;
+    font-size: clamp(0.38rem, 1.1vmin, 0.68rem);    
+  }
+
+
+}
+
+
+@media (max-width: 750px) {
+  // Banner — more rectangular: shorter height, shorter bottom padding so the
+  // ONE/NONE text still reads inside the bar.
+  .banner {
+    top: 32%;
+    height: 9.9%;
+    padding: 0 5% 1%;
+  }
+
+  // ONE/NONE — tighter scale + tracking so the words still feel airy in the
+  // narrower banner.
+  .bannerWord {
+    font-size: clamp(1.1rem, 2.7vmin, 1.2rem);
+    letter-spacing: 0.28em;
+  }
+
+  // bannerBody (the small-caps right column) — pulled up under the shorter
+  // banner, wider column so the lines don't break on every word.
+  .bannerBody {
+    top: 42.5%;
+    right: 8%;
+    width: 16%;
+    font-size: clamp(0.38rem, 1.1vmin, 0.68rem);    
+  }
+
+  // Headline — raise slightly, scale down so it doesn't dominate.
+  .headline {
+    top: 60.0%;
+    font-size: clamp(3.5rem, 9.5vmin, 5.5rem);
+  }
+
+  // Red block — smaller. At narrow widths the original 9% × 16% lands over
+  // the turtleneck and reads as a tie. Shrinking + nudging right breaks that.
+  .redBlock {
+    left: 52%;
+    width: 11.0%;
+    height: 11.5%;
+    top: 60%;
+  }
+
+  // Body copy — bodyRight widens significantly so it stops single-word-wrapping.
+  .bodyLeft {
+    width: 38%;
+    top: 69.5%;
+  }
+
+  .bodyRight {
+    left: 48%;
+    width: 26%;
+    top: 74.5%;
+    font-size: clamp(0.49rem, 1.05vmin, 0.72rem);
+  }
+
+}
+
+@media (max-width: 520px) {
+  // Banner — even shorter + reduced side margins so it spans wider relative
+  // to the narrower viewport (keeps the rectangular feel). Top lowered from
+  // 30% → 33% so the eyes sit centered inside the bar rather than below it.
+  .banner {
+    top: 33%;
+    height: 8.63%;
+    left: 5%;
+    right: 5%;
+    padding: 0 4% 0.7%;
+  }
+
+  .bannerWord {
+    font-size: clamp(0.95rem, 2.3vmin, 1.4rem);
+    letter-spacing: 0.22em;
+  }
+
+  // bannerBody — push down further from shorter banner + widen. Top moved
+  // from 40% → 43% to clear the lowered banner's bottom edge.
+  .bannerBody {
+    top: 43%;
+    right: 6%;
+    width: 18%;
+    font-size: clamp(0.35rem, 1.1vmin, 0.68rem);
+  }
+
+  // Headline — scaled down + lowered so it sits closer to the body texts
+  // and clears the chin/turtleneck area more naturally on the narrow canvas.
+  .headline {
+    top: 64%;
+    left: 5%;
+    font-size: clamp(3.6rem, 8.5vmin, 3.9rem);
+  }
+
+  // Red block — MOVED RIGHT off the face/neck axis so it can't read as a
+  // tie at phone widths. Sits as a vertical accent. Slid down with the
+  // headline so it still brackets the word visually.
+  .redBlock {
+    left: 65%;
+    width: 11%;
+    height: 11%;
+    top: 63%;
+  }
+
+  // Body copy — near-even column widths since the page is essentially a
+  // single tall strip at this width. Lowered to match the lowered headline.
+  .bodyLeft {
+    width: 45.5%;
+    top: 72.3%;
+    left: 5%;
+    font-size: clamp(0.51rem, 1.05vmin, 0.72rem);    
+  }
+
+  .bodyRight {
+    left: 65%;
+    width: 27%;
+    top: 76%;
+    font-size: clamp(0.48rem, 1.05vmin, 0.72rem);        
+  }
+
+}
+
+@media (max-width: 480px) {
+  // Banner — even shorter + reduced side margins so it spans wider relative
+  // to the narrower viewport (keeps the rectangular feel). Top lowered from
+  // 30% → 33% so the eyes sit centered inside the bar rather than below it.
+  .banner {
+    top: 33%;
+    height: 8.3%;
+    left: 5%;
+    right: 5%;
+    padding: 0 3% 0.6%;
+  }
+
+  .bannerWord {
+    font-size: clamp(0.95rem, 2.3vmin, 1.4rem);
+    letter-spacing: 0.22em;
+  }
+
+  // bannerBody — push down further from shorter banner + widen. Top moved
+  // from 40% → 43% to clear the lowered banner's bottom edge.
+  .bannerBody {
+    top: 43%;
+    right: 6.8%;
+    width: 14%;
+    font-size: clamp(0.35rem, 0.9vmin, 0.60rem);
+  }
+
+  // Headline — scaled down + lowered so it sits closer to the body texts
+  // and clears the chin/turtleneck area more naturally on the narrow canvas.
+  .headline {
+    top: 64%;
+    left: 6.2%;
+    font-size: clamp(3.2rem, 8.5vmin, 3.6rem);
+  }
+
+  // Red block — MOVED RIGHT off the face/neck axis so it can't read as a
+  // tie at phone widths. Sits as a vertical accent. Slid down with the
+  // headline so it still brackets the word visually.
+  .redBlock {
+    left: 62%;
+    width: 10.5%;
+    height: 11%;
+    top: 63%;
+  }
+
+  // Body copy — near-even column widths since the page is essentially a
+  // single tall strip at this width. Lowered to match the lowered headline.
+  .bodyLeft {
+    width: 43%;
+    top: 70.7%;
+    left: 5%;
+    font-size: clamp(0.515rem, 1.1vmin, 0.60rem);    
+  }
+
+  .bodyRight {
+    left: 61.5%;
+    width: 29%;
+    top: 76%;
+    font-size: clamp(0.43rem, 0.9vmin, 0.60rem);
+  }
+  
+  .nav {
+    position: absolute;
+    top: 4.5vmin;
+    left: 5%;
+    right: 4%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 12;
+    pointer-events: auto;
+  }
+  
+  .brandGroup {
+    display: flex;
+    align-items: center;
+    gap: 2vmin;
+  }
+  
+  .brandMono {
+    font-family: 'Playfair Display', 'DM Serif Display', serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: clamp(1rem, 2.4vmin, 1.6rem);
+    line-height: 1;
+    color: $poster-fg;
+    letter-spacing: -0.01em;
+  }
+  
+  .brandMark {
+    font-size: clamp(0.44rem, 1.05vmin, 0.7rem);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: $poster-muted;
+    padding-left: 1.2vmin;
+    border-left: 1px solid $poster-line-soft;
+  }
+  
+  .navItems {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.9rem, 2.4vmin, 2.6rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navLink {
+    font-size: clamp(0.48rem, 1.05vmin, 0.7rem);
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: $poster-muted;
+    transition: color 180ms ease;
+  
+    &:hover,
+    &:focus-visible {
+      color: $poster-fg;
+      outline: none;
+    }
+  }  
+  
+
+}
+
+@media (max-width: 445px) {
+  // Banner — even shorter + reduced side margins so it spans wider relative
+  // to the narrower viewport (keeps the rectangular feel). Top lowered from
+  // 30% → 33% so the eyes sit centered inside the bar rather than below it.
+  .banner {
+    top: 33%;
+    height: 8.3%;
+    left: 5%;
+    right: 5%;
+    padding: 0 3% 0.6%;
+  }
+
+  .bannerWord {
+    font-size: clamp(0.9rem, 2.3vmin, 1.4rem);
+    letter-spacing: 0.20em;
+  }
+
+  // bannerBody — push down further from shorter banner + widen. Top moved
+  // from 40% → 43% to clear the lowered banner's bottom edge.
+  .bannerBody {
+    top: 42.4%;
+    right: 7.2%;
+    width: 16%;
+    font-size: clamp(0.27rem, 0.9vmin, 0.60rem);
+  }
+
+  // Headline — scaled down + lowered so it sits closer to the body texts
+  // and clears the chin/turtleneck area more naturally on the narrow canvas.
+  .headline {
+    top: 65%;
+    left: 6%;
+    font-size: clamp(2.62rem, 8.5vmin, 3.6rem);
+  }
+
+  // Red block — MOVED RIGHT off the face/neck axis so it can't read as a
+  // tie at phone widths. Sits as a vertical accent. Slid down with the
+  // headline so it still brackets the word visually.
+  .redBlock {
+    left: 66.0%;
+    width: 9.5%;
+    height: 10.5%;
+    top: 65.82%;
+  }
+
+  // Body copy — near-even column widths since the page is essentially a
+  // single tall strip at this width. Lowered to match the lowered headline.
+  .bodyLeft {
+    width: 56.5%;
+    top: 72.0%;
+    left: 6%;
+    font-size: clamp(0.405rem, 1.1vmin, 0.60rem);    
+  }
+
+  .bodyRight {
+    left: 66%;
+    width: 33%;
+    top: 76.95%;
+    font-size: clamp(0.333rem, 0.9vmin, 0.60rem);
+  }
+  
+  .nav {
+    position: absolute;
+    top: 7.0vmin;
+    left: 7.6%;
+    right: 7.8%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 12;
+    pointer-events: auto;
+  }
+  
+  .brandGroup {
+    display: flex;
+    align-items: center;
+    gap: 2.8vmin;
+  }
+  
+  .brandMono {
+    font-family: 'Playfair Display', 'DM Serif Display', serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: clamp(0.45rem, 2.4vmin, 1.6rem);
+    color: $poster-fg;
+  }
+  
+  .brandMark {
+    font-size: clamp(0.38rem, 1.05vmin, 0.7rem);
+    letter-spacing: 0.29em;
+    text-transform: uppercase;
+    color: $poster-muted;
+    padding-left: 0.9vmin;
+    border-left: 1px solid $poster-line-soft;
+  }
+  
+  .navItems { 
+    display: flex;
+    align-items: center;
+    gap: clamp(0.9rem, 2.4vmin, 2.6rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navLink {  
+    font-size: clamp(0.43rem, 1.05vmin, 0.7rem);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: $poster-muted;
+    transition: color 180ms ease;
+  
+    &:hover,
+    &:focus-visible {
+      color: $poster-fg;
+      outline: none;
+    }
+  }  
+  
+
+}
+
+
+@media (min-width: 1200px) {
+ 
+  .darkWash {
+    position: absolute;
+    inset: -2%;
+    background:
+      radial-gradient(
+        ellipse 115% 13.8% at 45% 41.4%,
+        transparent 0%,
+        transparent 60%,
+        hsla(0, 0%, 0%, 0.6) 68%,
+        hsla(0, 0%, 0%, 0.85) 100%
+      );
+    
+    transform-origin: 50% 50%;
+    transform: rotate($banner-tilt);   
+    z-index: 2;
+    pointer-events: none;
+  }
+
+}
+
+
+@media (max-width: 750px) {
+ 
+  .darkWash {
+    position: absolute;
+    inset: -2%;
+    background:
+      radial-gradient(
+        ellipse 115% 8.1% at 45% 37.9%,
+        transparent 0%,
+        transparent 55%,
+        hsla(0, 0%, 0%, 0.6) 68%,
+        hsla(0, 0%, 0%, 0.85) 100%
+      );
+    
+    transform-origin: 50% 50%;
+    transform: rotate($banner-tilt);   
+    z-index: 2;
+    pointer-events: none;
+  }
+
+}
+
+
+
+@media (max-width: 600px) {
+ 
+  .darkWash {
+    position: absolute;
+    inset: -2%;
+    background:
+      radial-gradient(
+        ellipse 100% 6.7% at 45% 38.38%,
+        transparent 0%,
+        transparent 38%,
+        hsla(0, 0%, 0%, 0.6) 68%,
+        hsla(0, 0%, 0%, 0.82) 100%
+      );
+    
+    transform-origin: 50% 50%;
+    transform: rotate($banner-tilt);   
+    z-index: 2;
+    pointer-events: none;
+  }
+
+}
+
+
+@media (max-width: 500px) {
+ 
+  .darkWash {
+    position: absolute;
+    inset: -2%;
+    background:
+      radial-gradient(
+        ellipse 110% 5.4% at 45% 38.7%,
+        transparent 0%,
+        transparent 34%,
+        hsla(0, 0%, 0%, 0.62) 72%,
+        hsla(0, 0%, 0%, 0.82) 100%
+      );
+    
+    transform-origin: 50% 50%;
+    transform: rotate($banner-tilt);   
+    z-index: 2;
+    pointer-events: none;
+  }
+
+}
+
+
+@media (max-width: 445px) {
+ 
+  .darkWash {
+    position: absolute;
+    inset: -2%;
+    background:
+      radial-gradient(
+        ellipse 100% 6% at 50% 38.4%
+        transparent 65%,
+        hsla(0, 0%, 0%, 0.6) 60%,
+        hsla(0, 0%, 0%, 0.8) 100%
+      );
+    
+    transform-origin: 50% 50%;
+    transform: rotate($banner-tilt);   
+    z-index: 2;
+    pointer-events: none;
+  }
+
+}
+
+
+
