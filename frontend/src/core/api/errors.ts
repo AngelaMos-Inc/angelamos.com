@@ -63,6 +63,7 @@ export class ApiError extends Error {
 interface ApiErrorResponse {
   detail?: string | { msg: string; type: string }[]
   message?: string
+  error?: { code?: string; message?: string }
 }
 
 export function transformAxiosError(error: AxiosError<unknown>): ApiError {
@@ -75,7 +76,9 @@ export function transformAxiosError(error: AxiosError<unknown>): ApiError {
   let message = 'An error occurred'
   let details: Record<string, string[]> | undefined
 
-  if (data?.detail) {
+  if (data?.error?.message) {
+    message = data.error.message
+  } else if (data?.detail) {
     if (typeof data.detail === 'string') {
       message = data.detail
     } else if (Array.isArray(data.detail)) {

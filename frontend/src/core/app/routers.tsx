@@ -13,6 +13,10 @@ const routes: RouteObject[] = [
     lazy: () => import('@/pages/landing'),
   },
   {
+    path: ROUTES.COMPANY,
+    lazy: () => import('@/pages/company'),
+  },
+  {
     path: ROUTES.CONTACT,
     lazy: () => import('@/pages/contact'),
   },
@@ -21,8 +25,8 @@ const routes: RouteObject[] = [
     lazy: () => import('@/pages/registry'),
   },
   {
-    path: ROUTES.ARCHIVE,
-    lazy: () => import('@/pages/archive'),
+    path: ROUTES.WORK,
+    lazy: () => import('@/pages/work-with-me'),
   },
   {
     element: <Shell />,

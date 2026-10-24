@@ -31,3 +31,6 @@ Thumbs.db
 *.swp
 .idea/
 .vscode/
+
+# Retired source, kept on disk only
+graveyard/

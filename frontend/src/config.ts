@@ -5,24 +5,47 @@
 const API_VERSION = 'v1'
 
 export const API_ENDPOINTS = {
+  HEALTH: {
+    LIVE: '/healthz',
+    READY: '/readyz',
+  },
   USERS: {
     BASE: `/${API_VERSION}/users`,
     BY_ID: (id: string) => `/${API_VERSION}/users/${id}`,
   },
+  CONTACT: {
+    BASE: `/${API_VERSION}/contact`,
+  },
+  SOCIAL: {
+    STATS: `/${API_VERSION}/social/stats`,
+  },
+  GITHUB: {
+    STARS: `/${API_VERSION}/github/stars`,
+  },
 } as const
 
 export const QUERY_KEYS = {
+  HEALTH: {
+    READY: ['health', 'ready'] as const,
+  },
   USERS: {
     ALL: ['users'] as const,
     BY_ID: (id: string) => [...QUERY_KEYS.USERS.ALL, 'detail', id] as const,
+  },
+  SOCIAL: {
+    STATS: ['social', 'stats'] as const,
+  },
+  GITHUB: {
+    STARS: ['github', 'stars'] as const,
   },
 } as const
 
 export const ROUTES = {
   HOME: '/',
+  COMPANY: '/company',
   CONTACT: '/contact',
   INDEX: '/index',
-  ARCHIVE: '/archive',
+  WORK: '/work-with-me',
   DASHBOARD: '/dashboard',
   SETTINGS: '/settings',
 } as const

@@ -1,0 +1,651 @@
+// ===================
+// © AngelaMos | 2026
+// company.module.scss
+// ===================
+
+$void: hsl(0, 0%, 5.5%);
+$bone: hsl(40, 9%, 90%);
+$bone-soft: hsla(40, 9%, 90%, 0.56);
+$bone-faint: hsla(40, 9%, 90%, 0.34);
+$cold: hsl(202, 58%, 64%);
+$ink: hsla(202, 16%, 70%, 0.62);
+$line: hsla(40, 9%, 88%, 0.3);
+$line-soft: hsla(40, 9%, 88%, 0.13);
+
+$display: 'Cormorant', 'Playfair Display', Georgia, serif;
+$slab: 'Anton', 'Archivo', 'Helvetica Neue', Impact, sans-serif;
+$serif: 'Playfair Display', 'DM Serif Display', Georgia, serif;
+$mono: 'Space Mono', ui-monospace, 'SFMono-Regular', monospace;
+$sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+$ease: cubic-bezier(0.2, 0, 0.2, 1);
+
+.svgDefs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.page {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-height: 100dvh;
+  background: $void;
+  color: $bone;
+  font-family: $sans;
+  isolation: isolate;
+}
+
+.halftone {
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(
+    circle,
+    hsla(0, 0%, 0%, 0.46) 0.5px,
+    transparent 1.1px
+  );
+  background-size: 3.7px 3.7px;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  filter: url(#company-grain);
+  opacity: 0.72;
+  mix-blend-mode: overlay;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 132% 96% at 42% 46%,
+    transparent 52%,
+    hsla(0, 0%, 0%, 0.6) 100%
+  );
+  z-index: 5;
+  pointer-events: none;
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  max-width: 1500px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 0 4%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  z-index: 8;
+}
+
+.bracketTL {
+  position: absolute;
+  top: 2.4vmin;
+  left: 1.6%;
+  width: 26px;
+  height: 26px;
+  border-top: 1px solid $line;
+  border-left: 1px solid $line;
+  pointer-events: none;
+}
+
+.bracketBR {
+  position: absolute;
+  bottom: 2.4vmin;
+  right: 1.6%;
+  width: 26px;
+  height: 26px;
+  border-bottom: 1px solid $line;
+  border-right: 1px solid $line;
+  pointer-events: none;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 2.6vmin;
+}
+
+.brandGroup {
+  display: flex;
+  align-items: center;
+  gap: 1.4vmin;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover .brandMark,
+  &:focus-visible .brandMark {
+    color: $bone;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.brandMono {
+  font-family: $serif;
+  font-style: italic;
+  font-weight: 900;
+  font-size: clamp(1.18rem, 2.52vmin, 1.72rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: $bone;
+}
+
+.brandMark {
+  font-family: $mono;
+  font-size: clamp(0.5625rem, 1.06vmin, 0.72rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: $bone-soft;
+  padding-left: 1.2vmin;
+  border-left: 1px solid $line-soft;
+}
+
+.brandCopy {
+  font-family: $sans;
+  font-size: 1.2em;
+  line-height: 1;
+  letter-spacing: 0;
+  margin-right: 0.55em;
+}
+
+.navItems {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.2rem, 2.4vmin, 2.6rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink {
+  position: relative;
+  font-family: $mono;
+  font-size: clamp(0.5625rem, 1.06vmin, 0.72rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: $bone-soft;
+  transition: color 200ms ease;
+
+  &:hover,
+  &:focus-visible {
+    color: $bone;
+    outline: none;
+  }
+}
+
+.navCurrent {
+  color: $bone;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: -0.9em;
+    top: 50%;
+    width: 4px;
+    height: 4px;
+    margin-top: -2px;
+    background: $cold;
+    border-radius: 50%;
+  }
+}
+
+.head {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: clamp(22rem, 54vh, 38rem);
+  padding: clamp(4rem, 13vh, 9rem) 0 clamp(2rem, 5vh, 3.2rem);
+}
+
+// The statue is not a framed plate like the other pages. The source is already
+// pure black, so `screen` drops its background out entirely and leaves only the
+// lit marble floating in the void - no border, no crop, nothing to align to.
+.figureWrap {
+  position: absolute;
+  top: 0;
+  right: -6%;
+  bottom: 0;
+  width: clamp(20rem, 62%, 54rem);
+  pointer-events: none;
+  z-index: 0;
+}
+
+// The source black is only near-black, so `screen` alone leaves a faint
+// rectangle. Crushing contrast first drives that background to true black,
+// and the mask dissolves whatever survives at the edges.
+.figure {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 38% 22%;
+  mix-blend-mode: screen;
+  opacity: 0.58;
+  filter: grayscale(1) contrast(1.38) brightness(0.82);
+  mask-image:
+    linear-gradient(90deg, transparent 0%, #000 52%, #000 100%),
+    linear-gradient(
+      0deg,
+      transparent 0%,
+      #000 38%,
+      #000 72%,
+      transparent 100%
+    );
+  mask-composite: intersect;
+}
+
+// A cold cast pulled through the figure so it sits in the page palette
+// instead of reading as a stock photograph dropped on top of it. It carries
+// the same mask as the image, or its own edges show as a lit rectangle.
+.figureFade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    200deg,
+    hsla(202, 58%, 64%, 0.16) 0%,
+    transparent 58%
+  );
+  mix-blend-mode: soft-light;
+  mask-image:
+    linear-gradient(90deg, transparent 0%, #000 52%, #000 100%),
+    linear-gradient(
+      0deg,
+      transparent 0%,
+      #000 38%,
+      #000 72%,
+      transparent 100%
+    );
+  mask-composite: intersect;
+}
+
+// Surveying language, rephrased: the other pages box a reticle inside a frame.
+// Here a single plumb line falls the full height through the open hand.
+.plumb {
+  position: absolute;
+  top: 4%;
+  bottom: -8%;
+  left: 74%;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    $line-soft 16%,
+    $line-soft 78%,
+    transparent 100%
+  );
+}
+
+.plumbTick {
+  position: absolute;
+  top: 63%;
+  left: 74%;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border: 1px solid $cold;
+  border-radius: 50%;
+}
+
+.headText {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  z-index: 1;
+}
+
+.eyebrow {
+  font-family: $mono;
+  font-size: 0.66rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: $bone-faint;
+  margin-bottom: 1.4rem;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  color: $bone;
+  text-shadow: 0 2px 26px hsla(0, 0%, 0%, 0.6);
+}
+
+.titleSlab {
+  font-family: $slab;
+  font-weight: 400;
+  font-size: clamp(3.05rem, 8.82vmin, 6.95rem);
+  line-height: 0.92;
+  letter-spacing: 0.012em;
+  text-transform: uppercase;
+}
+
+.titleScript {
+  position: relative;
+  align-self: flex-start;
+  margin-top: -0.12em;
+  padding-left: clamp(1.4rem, 6vmin, 5rem);
+  font-family: $display;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(3.36rem, 10.1vmin, 8rem);
+  line-height: 0.88;
+  letter-spacing: -0.005em;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 8%;
+    right: -6%;
+    top: 62%;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      $bone-soft 6%,
+      $bone-soft 78%,
+      transparent 100%
+    );
+    transform: rotate(-1.4deg);
+    pointer-events: none;
+  }
+}
+
+.tally {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(1rem, 2.4vw, 2rem);
+  padding: 0 0 clamp(1.6rem, 4vh, 2.6rem);
+}
+
+.tallyNum {
+  font-family: $slab;
+  font-weight: 400;
+  font-size: clamp(2.1rem, 5.25vmin, 3.6rem);
+  line-height: 0.8;
+  letter-spacing: 0.01em;
+  color: $cold;
+}
+
+.tallyText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.tallyLead {
+  font-family: $mono;
+  font-size: 0.66rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: $bone;
+}
+
+.tallySub {
+  font-family: $mono;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: $bone-faint;
+}
+
+.ledger {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid $line-soft;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 2.6rem 11rem minmax(0, 1fr) 9.5rem minmax(0, 18rem);
+  align-items: center;
+  column-gap: 1.6rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid $line-soft;
+}
+
+.no {
+  font-family: $mono;
+  font-size: 0.68rem;
+  letter-spacing: 0.24em;
+  color: $bone-faint;
+}
+
+.label {
+  margin: 0;
+  font-family: $display;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1.6rem, 2.94vmin, 2.24rem);
+  line-height: 1;
+  color: $bone;
+  overflow-wrap: anywhere;
+}
+
+.desc {
+  margin: 0;
+  max-width: 36rem;
+  font-family: $mono;
+  font-size: 0.74rem;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  color: $bone-soft;
+}
+
+.meta {
+  font-family: $mono;
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: $bone-faint;
+}
+
+.target {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0.7rem 0.8rem;
+  font-family: $mono;
+  font-size: 0.66rem;
+  color: $ink;
+  text-align: left;
+  text-decoration: none;
+  background: transparent;
+  border: 1px solid $line-soft;
+  cursor: pointer;
+
+  // The row itself is inert. This box is the only thing on the page that
+  // answers to a cursor, so the whole affordance lives here.
+  transition:
+    border-color 260ms $ease,
+    background-color 260ms $ease,
+    color 260ms $ease;
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    color: $bone;
+    border-color: $line;
+    background-color: hsla(40, 9%, 90%, 0.03);
+  }
+
+  &:hover .targetAction,
+  &:focus-visible .targetAction {
+    color: $cold;
+  }
+}
+
+.targetHost {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  letter-spacing: 0.04em;
+}
+
+.targetAction {
+  flex: 0 0 auto;
+  font-size: 0.58rem;
+  letter-spacing: 0.3em;
+  color: $bone-faint;
+  transition: color 200ms ease;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: auto;
+  padding: clamp(3rem, 8vh, 5rem) 0 3.4vh;
+  font-family: $mono;
+  font-size: clamp(0.5625rem, 1vmin, 0.72rem);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: $bone-soft;
+}
+
+.footerLeft {
+  flex: 0 0 auto;
+  color: inherit;
+  text-decoration: none;
+}
+
+.footerCenter {
+  flex: 1 1 auto;
+  text-align: center;
+  color: $bone-faint;
+  letter-spacing: 0.2em;
+}
+
+.footerRight {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.9em;
+  flex: 0 0 auto;
+}
+
+.footerDash {
+  color: hsla(40, 9%, 70%, 0.5);
+}
+
+.footerNumber {
+  color: $bone-soft;
+}
+
+@media (max-width: 1180px) {
+  .row {
+    grid-template-columns: 2.6rem 10rem minmax(0, 1fr) minmax(0, 16rem);
+  }
+
+  .meta {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .stage {
+    padding: 0 7%;
+  }
+
+  .head {
+    min-height: clamp(19rem, 46vh, 26rem);
+    padding-top: 14vh;
+  }
+
+  // Narrow viewports lose the side-by-side read, so the statue stops being a
+  // right-hand figure and becomes a full-width wash the title sits on top of.
+  .figureWrap {
+    right: -14%;
+    left: -7%;
+    width: auto;
+  }
+
+  .figure {
+    object-position: 42% 18%;
+    opacity: 0.32;
+  }
+
+  .plumb,
+  .plumbTick {
+    display: none;
+  }
+
+  .titleScript {
+    padding-left: clamp(1rem, 8vmin, 3rem);
+  }
+
+  .row {
+    grid-template-columns: 2rem minmax(0, 1fr) auto;
+    grid-template-areas:
+      'no label meta'
+      'no desc desc'
+      'no target target';
+    gap: 0.8rem 0.9rem;
+    align-items: baseline;
+    padding: 1.4rem 0 1.5rem;
+  }
+
+  .no {
+    grid-area: no;
+  }
+
+  .label {
+    grid-area: label;
+  }
+
+  .desc {
+    grid-area: desc;
+    max-width: none;
+  }
+
+  .meta {
+    display: block;
+    grid-area: meta;
+    justify-self: end;
+  }
+
+  .target {
+    grid-area: target;
+  }
+}
+
+@media (max-width: 520px) {
+  .nav {
+    padding-top: 3.2vmin;
+  }
+
+  .navItems {
+    gap: 1.1rem;
+  }
+
+  .tallySub {
+    display: none;
+  }
+
+  .footerCenter {
+    display: none;
+  }
+}

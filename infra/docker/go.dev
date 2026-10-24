@@ -1,0 +1,23 @@
+# =============================================================================
+# AngelaMos | 2026
+# go.dev
+# =============================================================================
+# Development Dockerfile for the Go API: air hot-reload, source bind-mounted.
+# Build context is ./backend ; run with ./backend mounted at /app.
+# =============================================================================
+# syntax=docker/dockerfile:1
+
+FROM golang:1.25-bookworm
+
+RUN go install github.com/air-verse/air@latest
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+EXPOSE 8080
+
+CMD ["air", "-c", ".air.toml"]

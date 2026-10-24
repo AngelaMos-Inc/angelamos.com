@@ -2,11 +2,11 @@
 # AngelaMos | 2026
 # compose.yml
 # =============================================================================
-# Production compose - Nginx serving built React app
+# Production compose - Nginx (static React + /api proxy) + Go API + Postgres + Redis
 # For Cloudflare tunnel: docker compose -f compose.yml -f cloudflared.compose.yml up
 # =============================================================================
 
-name: ${APP_NAME:-001}
+name: "001"
 
 services:
   nginx:
@@ -15,10 +15,13 @@ services:
       dockerfile: infra/docker/vite.prod
       args:
         - VITE_API_URL=${VITE_API_URL:-/api}
-        - VITE_APP_TITLE=${VITE_APP_TITLE:-My App}
-    container_name: ${APP_NAME:-001}-nginx
+        - VITE_APP_TITLE=${VITE_APP_TITLE:-001}
+    container_name: 001-nginx
     ports:
       - "${NGINX_HOST_PORT:-12491}:80"
+    depends_on:
+      api:
+        condition: service_started
     networks:
       - app
     deploy:
@@ -31,6 +34,81 @@ services:
           memory: 64M
     restart: unless-stopped
 
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: 001-api:latest
+    container_name: 001-api
+    environment:
+      - ENVIRONMENT=production
+      - HOST=0.0.0.0
+      - PORT=8080
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD:-postgres}@postgres:5432/app?sslmode=disable
+      - REDIS_URL=redis://redis:6379/0
+      - JWT_PRIVATE_KEY_PATH=keys/private.pem
+      - JWT_PUBLIC_KEY_PATH=keys/public.pem
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_FORMAT=json
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - CONTACT_TO_EMAIL=${CONTACT_TO_EMAIL:-carterperez@angelamos.com}
+      - CONTACT_FROM_EMAIL=${CONTACT_FROM_EMAIL:-noreply@angelamos.com}
+      - IG_USER_ID=${IG_USER_ID:-}
+      - IG_ACCESS_TOKEN=${IG_ACCESS_TOKEN:-}
+      - IG_GRAPH_VERSION=${IG_GRAPH_VERSION:-v22.0}
+      - SOCIAL_POLL_INTERVAL=${SOCIAL_POLL_INTERVAL:-5m}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:18-alpine
+    container_name: 001-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: app
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: 001-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app
+    restart: unless-stopped
+
 networks:
   app:
     driver: bridge
+
+volumes:
+  pgdata:
+  redisdata:

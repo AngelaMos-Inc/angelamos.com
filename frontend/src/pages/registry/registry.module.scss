@@ -3,16 +3,14 @@
 // registry.module.scss
 // ===================
 
-@use '@/styles/tokens' as *;
-
 $void: hsl(0, 0%, 5.5%);
 $bone: hsl(40, 9%, 90%);
 $bone-soft: hsla(40, 9%, 90%, 0.56);
-$bone-faint: hsla(40, 9%, 90%, 0.32);
-$bone-dim: hsla(40, 9%, 90%, 0.2);
-$line: hsla(40, 9%, 88%, 0.26);
-$line-soft: hsla(40, 9%, 88%, 0.11);
-$wash: hsla(40, 9%, 90%, 0.045);
+$bone-faint: hsla(40, 9%, 90%, 0.34);
+$cold: hsl(202, 58%, 64%);
+$ink: hsla(202, 16%, 70%, 0.62);
+$line: hsla(40, 9%, 88%, 0.3);
+$line-soft: hsla(40, 9%, 88%, 0.13);
 
 $display: 'Cormorant', 'Playfair Display', Georgia, serif;
 $serif: 'Playfair Display', 'DM Serif Display', Georgia, serif;
@@ -34,22 +32,44 @@ $sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: $void;
   color: $bone;
   font-family: $sans;
-  overflow: hidden;
+  isolation: isolate;
 }
 
-.poster {
-  position: relative;
-  width: 100%;
-  min-height: 100dvh;
-  overflow: hidden;
-  isolation: isolate;
-  background:
-    radial-gradient(
-      ellipse 90% 60% at 78% 5%,
-      hsla(40, 9%, 90%, 0.065) 0%,
-      transparent 60%
-    ),
-    $void;
+.halftone {
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(
+    circle,
+    hsla(0, 0%, 0%, 0.46) 0.5px,
+    transparent 1.1px
+  );
+  background-size: 3.7px 3.7px;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  filter: url(#index-grain);
+  opacity: 0.72;
+  mix-blend-mode: overlay;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 132% 96% at 42% 46%,
+    transparent 52%,
+    hsla(0, 0%, 0%, 0.6) 100%
+  );
+  z-index: 5;
+  pointer-events: none;
 }
 
 .stage {
@@ -58,77 +78,29 @@ $sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   max-width: 1500px;
   min-height: 100dvh;
   margin: 0 auto;
-  padding: 2.6vmin 4% 9vh;
+  padding: 0 4%;
   box-sizing: border-box;
-}
-
-.bracketTL,
-.bracketBR {
-  position: absolute;
-  width: 26px;
-  height: 26px;
-  z-index: 9;
-  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  z-index: 8;
 }
 
 .bracketTL {
+  position: absolute;
   top: 2.4vmin;
   left: 1.6%;
+  width: 26px;
+  height: 26px;
   border-top: 1px solid $line;
   border-left: 1px solid $line;
-}
-
-.bracketBR {
-  bottom: 2.4vmin;
-  right: 1.6%;
-  border-bottom: 1px solid $line;
-  border-right: 1px solid $line;
-}
-
-.halftone {
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(
-    circle,
-    hsla(0, 0%, 0%, 0.4) 0.5px,
-    transparent 1.1px
-  );
-  background-size: 3.7px 3.7px;
-  mix-blend-mode: multiply;
-  opacity: 0.8;
-  z-index: 3;
-  pointer-events: none;
-}
-
-.grain {
-  position: absolute;
-  inset: 0;
-  filter: url(#registry-grain);
-  opacity: 0.6;
-  mix-blend-mode: overlay;
-  z-index: 4;
-  pointer-events: none;
-}
-
-.vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse 130% 100% at 50% 42%,
-    transparent 58%,
-    hsla(0, 0%, 0%, 0.55) 100%
-  );
-  z-index: 5;
   pointer-events: none;
 }
 
 .nav {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  z-index: 12;
-  margin-bottom: clamp(3rem, 9vh, 7rem);
+  padding-top: 2.6vmin;
 }
 
 .brandGroup {
@@ -152,7 +124,7 @@ $sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-family: $serif;
   font-style: italic;
   font-weight: 900;
-  font-size: clamp(1.1rem, 2.4vmin, 1.6rem);
+  font-size: clamp(1.18rem, 2.52vmin, 1.72rem);
   line-height: 1;
   letter-spacing: -0.02em;
   color: $bone;
@@ -160,13 +132,20 @@ $sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
 .brandMark {
   font-family: $mono;
-  font-size: clamp(0.5rem, 1vmin, 0.66rem);
+  font-size: clamp(0.5625rem, 1.06vmin, 0.72rem);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: $bone-soft;
   padding-left: 1.2vmin;
   border-left: 1px solid $line-soft;
-  transition: color 200ms ease;
+}
+
+.brandCopy {
+  font-family: $sans;
+  font-size: 1.2em;
+  line-height: 1;
+  letter-spacing: 0;
+  margin-right: 0.55em;
 }
 
 .navItems {
@@ -181,7 +160,7 @@ $sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 .navLink {
   position: relative;
   font-family: $mono;
-  font-size: clamp(0.5rem, 1vmin, 0.66rem);
+  font-size: clamp(0.5625rem, 1.06vmin, 0.72rem);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   text-decoration: none;
@@ -206,149 +185,61 @@ $sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     width: 4px;
     height: 4px;
     margin-top: -2px;
-    background: $bone;
+    background: $cold;
     border-radius: 50%;
   }
 }
 
 .head {
-  position: relative;
-  z-index: 8;
-  margin-bottom: clamp(2.4rem, 6vh, 4.6rem);
-}
-
-.eyebrow {
-  display: block;
-  font-family: $mono;
-  font-size: 0.6rem;
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  color: $bone-faint;
-  margin-bottom: 1.2rem;
-}
-
-.title {
-  margin: 0;
-  font-family: $display;
-  font-style: italic;
-  font-weight: 600;
-  font-size: clamp(3.4rem, 10vmin, 8rem);
-  line-height: 0.9;
-  letter-spacing: -0.005em;
-  color: $bone;
-}
-
-.titleInner {
-  position: relative;
-  display: inline-block;
-
-  &::after {
-    content: '';
-    position: absolute;
-    left: -2%;
-    right: -6%;
-    top: 62%;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      $bone-soft 6%,
-      $bone-soft 80%,
-      transparent 100%
-    );
-    transform: rotate(-1deg);
-    pointer-events: none;
-  }
-}
-
-.intro {
-  max-width: 34rem;
-  margin: 1.6rem 0 0;
-  font-family: $mono;
-  font-size: clamp(0.56rem, 1.02vmin, 0.7rem);
-  line-height: 1.85;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: $bone-soft;
-}
-
-.register {
-  position: relative;
-  z-index: 8;
-}
-
-.rows {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.row {
   display: grid;
-  grid-template-columns: 3.4rem 1fr 11rem 5rem 7rem;
-  align-items: baseline;
-  gap: 1rem;
-  padding: 1.05rem 0.6rem;
-  border-bottom: 1px solid $line-soft;
-  transition: background 180ms ease;
+  grid-template-columns: minmax(0, 1fr) clamp(260px, 32vw, 480px);
+  align-items: end;
+  column-gap: clamp(2rem, 6vw, 6rem);
+  padding: clamp(4rem, 13vh, 9rem) 0 clamp(2rem, 5vh, 3.4rem);
 }
 
-.rowHead {
-  padding-bottom: 0.8rem;
-  border-bottom: 1px solid $line;
-
-  span {
-    font-family: $mono;
-    font-size: 0.56rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: $bone-faint;
-  }
+.headText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
-.rows .row {
-  cursor: default;
-
-  &:hover {
-    background: $wash;
-
-    .cross {
-      opacity: 1;
-    }
-
-    .cellTitle {
-      color: $bone;
-    }
-
-    .cellNum {
-      color: $bone;
-    }
-  }
+.plate {
+  margin: 0;
+  min-width: 0;
 }
 
-.cellNum {
+.plateFrame {
   position: relative;
-  font-family: $mono;
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-  color: $bone-faint;
-  transition: color 180ms ease;
+  width: 100%;
+  aspect-ratio: 1200 / 401;
+  overflow: hidden;
+  border: 1px solid $line-soft;
 }
 
-.cross {
+.plateImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: url('#index-grade') brightness(0.92) contrast(1.06);
+  opacity: 0.9;
+}
+
+.reticle {
   position: absolute;
-  left: -1.5rem;
-  top: 0.15rem;
-  width: 9px;
-  height: 9px;
-  opacity: 0;
-  transition: opacity 180ms ease;
+  top: 51%;
+  left: 60%;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  pointer-events: none;
 
   &::before,
   &::after {
     content: '';
     position: absolute;
-    background: $bone-soft;
+    background: $bone-faint;
   }
 
   &::before {
@@ -366,17 +257,152 @@ $sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 }
 
-.cellTitle {
+.tick {
+  position: absolute;
+  top: 51%;
+  left: 60%;
+  width: 11px;
+  height: 11px;
+  margin: -5.5px 0 0 -5.5px;
+  border: 1px solid $cold;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.plateMeta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.9rem;
+}
+
+.plateLabel {
+  font-family: $mono;
+  font-size: 0.62rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: $bone-soft;
+}
+
+.eyebrow {
+  font-family: $mono;
+  font-size: 0.66rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: $bone-faint;
+  margin-bottom: 1.4rem;
+}
+
+.title {
+  margin: 0;
   font-family: $display;
   font-style: italic;
   font-weight: 600;
-  font-size: clamp(1.4rem, 3vmin, 2.1rem);
-  line-height: 1;
-  color: $bone-soft;
-  transition: color 180ms ease;
+  font-size: clamp(3.36rem, 9.45vmin, 7.55rem);
+  line-height: 0.88;
+  letter-spacing: -0.005em;
+  color: $bone;
+  text-shadow: 0 2px 26px hsla(0, 0%, 0%, 0.6);
 }
 
-.cellField {
+.titleInner {
+  position: relative;
+  display: inline-block;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: -2%;
+    right: -6%;
+    top: 60%;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      $bone-soft 6%,
+      $bone-soft 78%,
+      transparent 100%
+    );
+    transform: rotate(-1.4deg);
+    pointer-events: none;
+  }
+}
+
+.intro {
+  max-width: 38rem;
+  margin: 1.6rem 0 0;
+  font-family: $mono;
+  font-size: clamp(0.68rem, 1.24vmin, 0.84rem);
+  line-height: 1.85;
+  letter-spacing: 0.02em;
+  color: $bone-soft;
+}
+
+.count {
+  flex: 0 0 auto;
+  font-family: $mono;
+  font-size: 0.62rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: $bone-faint;
+}
+
+.ledger {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid $line-soft;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 2.6rem 10.5rem minmax(0, 1fr) 7.5rem minmax(0, 24rem);
+  align-items: center;
+  column-gap: 1.6rem;
+  padding: 0.95rem 0;
+  border-top: 1px solid $line-soft;
+  transition: background 200ms ease;
+
+  &:hover {
+    background: hsla(40, 9%, 90%, 0.025);
+  }
+
+  &:hover .no {
+    color: $cold;
+  }
+}
+
+.no {
+  font-family: $mono;
+  font-size: 0.62rem;
+  letter-spacing: 0.24em;
+  color: $bone-faint;
+  transition: color 200ms ease;
+}
+
+.name {
+  margin: 0;
+  font-family: $display;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1.34rem, 2.34vmin, 1.72rem);
+  line-height: 1;
+  color: $bone;
+  overflow-wrap: anywhere;
+}
+
+.desc {
+  margin: 0;
+  max-width: 34rem;
+  font-family: $mono;
+  font-size: 0.74rem;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+  color: $bone-soft;
+}
+
+.lang {
   font-family: $mono;
   font-size: 0.6rem;
   letter-spacing: 0.22em;
@@ -384,45 +410,79 @@ $sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   color: $bone-faint;
 }
 
-.cellYear {
+.cmd {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0.6rem 0.8rem;
   font-family: $mono;
-  font-size: 0.64rem;
-  letter-spacing: 0.12em;
+  font-size: 0.66rem;
+  color: $ink;
+  text-align: left;
+  background: transparent;
+  border: 1px solid $line-soft;
+  cursor: pointer;
+  transition:
+    border-color 200ms ease,
+    color 200ms ease;
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    color: $bone;
+    border-color: $line;
+  }
+
+  &:hover .cmdAction,
+  &:focus-visible .cmdAction {
+    color: $bone;
+  }
+}
+
+.cmdCopied,
+.cmdCopied:hover,
+.cmdCopied:focus-visible {
+  color: $cold;
+  border-color: $cold;
+
+  .cmdAction {
+    color: $cold;
+  }
+}
+
+.cmdPrompt {
+  flex: 0 0 auto;
   color: $bone-faint;
 }
 
-.cellState {
-  font-family: $mono;
-  font-size: 0.56rem;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  text-align: right;
+.cmdText {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  font-family: inherit;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.stateExtant {
-  color: $bone-soft;
-}
-
-.stateDormant {
+.cmdAction {
+  flex: 0 0 auto;
+  font-size: 0.58rem;
+  letter-spacing: 0.3em;
   color: $bone-faint;
-}
-
-.stateInterred {
-  color: $bone-dim;
-  text-decoration: line-through;
-  text-decoration-color: $bone-dim;
+  transition: color 200ms ease;
 }
 
 .footer {
-  position: relative;
-  z-index: 9;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-top: clamp(3rem, 8vh, 6rem);
+  margin-top: auto;
+  padding: clamp(3rem, 8vh, 5rem) 0 3.4vh;
   font-family: $mono;
-  font-size: clamp(0.5rem, 0.92vmin, 0.66rem);
+  font-size: clamp(0.5625rem, 1vmin, 0.72rem);
   letter-spacing: 0.26em;
   text-transform: uppercase;
   color: $bone-soft;
@@ -430,6 +490,8 @@ $sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
 .footerLeft {
   flex: 0 0 auto;
+  color: inherit;
+  text-decoration: none;
 }
 
 .footerCenter {
@@ -454,32 +516,72 @@ $sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   color: $bone-soft;
 }
 
-@media (max-width: 820px) {
+@media (max-width: 1180px) {
   .row {
-    grid-template-columns: 2.6rem 1fr 6rem;
-    gap: 0.8rem;
+    grid-template-columns: 2.6rem 9rem minmax(0, 1fr) minmax(0, 20rem);
   }
 
-  .cellField,
-  .cellYear {
-    display: none;
-  }
-
-  .cross {
+  .lang {
     display: none;
   }
 }
 
+@media (max-width: 860px) {
+  .stage {
+    padding: 0 7%;
+  }
+
+  .head {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 2.4rem;
+    padding-top: 14vh;
+  }
+
+  .row {
+    grid-template-columns: 2rem minmax(0, 1fr) auto;
+    grid-template-areas:
+      'no name lang'
+      'no desc desc'
+      'no cmd cmd';
+    row-gap: 0.7rem;
+    column-gap: 0.9rem;
+    align-items: baseline;
+    padding: 1.1rem 0 1.2rem;
+  }
+
+  .no {
+    grid-area: no;
+  }
+
+  .name {
+    grid-area: name;
+  }
+
+  .desc {
+    grid-area: desc;
+    max-width: none;
+  }
+
+  .lang {
+    display: block;
+    grid-area: lang;
+  }
+
+  .cmd {
+    grid-area: cmd;
+  }
+}
+
 @media (max-width: 520px) {
+  .nav {
+    padding-top: 3.2vmin;
+  }
+
   .navItems {
     gap: 1.1rem;
   }
 
   .footerCenter {
     display: none;
-  }
-
-  .cellTitle {
-    font-size: 1.4rem;
   }
 }

@@ -10,11 +10,11 @@ import styles from './landing.module.scss'
 const content = {
   brand: {
     mono: 'AM',
-    mark: "©ANGELAMOS"
+    mark: 'ANGELAMOS',
   },
   nav: [
+    { label: 'COMPANY', href: null, to: ROUTES.COMPANY },
     { label: 'INDEX', href: null, to: ROUTES.INDEX },
-    { label: 'ARCHIVE', href: null, to: ROUTES.ARCHIVE },
     { label: 'CONTACT', href: null, to: ROUTES.CONTACT },
   ],
   bannerLeft: 'ONE',
@@ -26,8 +26,9 @@ const content = {
     'EVERY HOLLOW HOLDS A NEGATIVE PORTRAIT OF WHAT ONCE LIVED INSIDE IT. THE SHAPE OF MISSING IS ALWAYS SHARPER, ALWAYS HEAVIER, THAN THE SHAPE OF HAVING.',
   bodyRight:
     'WHAT WE LEAVE UNSAID HOLDS MORE WEIGHT THAN WHAT WE CHOOSE.',
-  footerLeft: 'CarterPerez-dev / 2026',
-  footerNumber: '02',
+  footerLeft: 'CarterPerez.dev / 2026',
+  footerHref: 'https://lisdex.sh',
+  footerNumber: '00',
   portraitSrc: '/assets/portrait.webp',
   portraitAlt: 'Hollowed cover portrait',
 }
@@ -82,7 +83,10 @@ export function Component(): React.ReactElement {
           <nav className={styles.nav}>
             <div className={styles.brandGroup}>
               <span className={styles.brandMono}>{content.brand.mono}</span>
-              <span className={styles.brandMark}>{content.brand.mark}</span>
+              <span className={styles.brandMark}>
+                <span className={styles.brandCopy}>©</span>
+                {content.brand.mark}
+              </span>
             </div>
             <ul className={styles.navItems}>
               {content.nav.map((item) => (
@@ -112,7 +116,14 @@ export function Component(): React.ReactElement {
           <p className={styles.bodyRight}>{content.bodyRight}</p>
 
           <footer className={styles.footer}>
-            <span className={styles.footerLeft}>{content.footerLeft}</span>
+            <a
+              className={styles.footerLeft}
+              href={content.footerHref}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              {content.footerLeft}
+            </a>
             <span className={styles.footerRight}>
               <span className={styles.footerDash}>&mdash;</span>
               <span className={styles.footerNumber}>

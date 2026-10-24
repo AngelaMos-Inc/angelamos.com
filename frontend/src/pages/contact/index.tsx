@@ -3,39 +3,118 @@
 // index.tsx
 // ===================
 
-import { type ReactElement, useMemo, useState } from 'react'
+import { type ReactElement, useState } from 'react'
+import type { IconType } from 'react-icons'
+import {
+  FaDiscord,
+  FaEnvelope,
+  FaFacebookF,
+  FaGithub,
+  FaInstagram,
+  FaLinkedinIn,
+  FaPhone,
+  FaTelegram,
+  FaTiktok,
+  FaXTwitter,
+} from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
+import { toast } from 'sonner'
+import { useSubmitContact } from '@/api'
 import { ROUTES } from '@/config'
 import styles from './contact.module.scss'
 
-const RECIPIENT = 'contact@angelamos.com'
+type LineLink = {
+  key: string
+  label: string
+  Icon: IconType
+  href?: string
+  copy?: string
+}
+
+const links: LineLink[] = [
+  {
+    key: 'instagram',
+    label: 'Instagram',
+    Icon: FaInstagram,
+    href: 'https://www.instagram.com/carrterperez.dev',
+  },
+  {
+    key: 'tiktok',
+    label: 'TikTok',
+    Icon: FaTiktok,
+    href: 'https://www.tiktok.com/@certgames.com',
+  },
+  { key: 'x', label: 'X', Icon: FaXTwitter, href: 'https://x.com/suuci2' },
+  {
+    key: 'github',
+    label: 'GitHub',
+    Icon: FaGithub,
+    href: 'https://github.com/CarterPerez-dev',
+  },
+  {
+    key: 'linkedin',
+    label: 'LinkedIn',
+    Icon: FaLinkedinIn,
+    href: 'https://www.linkedin.com/in/carterperez-dev/',
+  },
+  {
+    key: 'facebook',
+    label: 'Facebook',
+    Icon: FaFacebookF,
+    href: 'https://www.facebook.com/profile.php?id=61573645016955',
+  },
+  {
+    key: 'telegram',
+    label: 'Telegram',
+    Icon: FaTelegram,
+    href: 'https://t.me/carterperez_dev',
+  },
+  {
+    key: 'discord',
+    label: 'Discord — carter.perez.dev (copy)',
+    Icon: FaDiscord,
+    copy: 'carter.perez.dev',
+  },
+  {
+    key: 'email',
+    label: 'carterperez@angelamos.com',
+    Icon: FaEnvelope,
+    href: 'mailto:carterperez@angelamos.com',
+  },
+  {
+    key: 'phone',
+    label: '410-212-7288',
+    Icon: FaPhone,
+    href: 'tel:+14102127288',
+  },
+]
 
 const content = {
   brand: {
     mono: 'AM',
-    mark: '©ANGELAMOS',
+    mark: 'ANGELAMOS',
   },
   nav: [
-    { label: 'INDEX', href: null, to: ROUTES.INDEX, current: false },
-    { label: 'ARCHIVE', href: null, to: ROUTES.ARCHIVE, current: false },
-    { label: 'CONTACT', href: null, to: ROUTES.CONTACT, current: true },
+    { label: 'COMPANY', to: ROUTES.COMPANY, current: false },
+    { label: 'INDEX', to: ROUTES.INDEX, current: false },
+    { label: 'CONTACT', to: ROUTES.CONTACT, current: true },
   ],
   plate: '03',
   title: 'audience',
   intro:
-    'TO BE HEARD HERE IS NOT PROMISED. SPEAK INTO IT ANYWAY — WHAT IS SAID INTO THE DARK STILL LEAVES A SHAPE.',
+    "I read everything. If I don't reply, it wasn't worth one. Reflect on that.",
   specimen: {
     src: '/assets/lily.webp',
     alt: 'X-ray calla lily specimen',
     label: 'CALLA · LILIUM',
-    caption:
-      'A NEGATIVE PORTRAIT OF WHAT ONCE LIVED INSIDE IT. WHAT YOU SEE THROUGH IS THE PART ALREADY GONE.',
-    plate: 'PLATE Nº 03 — DEVELOPED FROM ABSENCE',
   },
   ghostSrc: '/assets/jellyfish.jpg',
   sentLead: 'sent',
-  sentBody: 'The request is made. The rest is not yours.',
-  footerLeft: 'CarterPerez-dev / 2026',
+  sentBody:
+    "It's through. I read everything that lands here — I'll answer when it reaches me.",
+  linesLabel: 'DIRECT LINES',
+  footerLeft: 'CarterPerez.dev / 2026',
+  footerHref: 'https://lisdex.sh',
   stamp: '38°53′N 77°02′W',
   date: '2026·05·30',
 }
@@ -45,28 +124,21 @@ export function Component(): ReactElement {
   const [where, setWhere] = useState('')
   const [what, setWhat] = useState('')
   const [sent, setSent] = useState(false)
+  const submit = useSubmitContact()
 
-  const mailto = useMemo(() => {
-    const subject = who.trim() ? `An audience — ${who.trim()}` : 'An audience'
-    const body = [
-      who.trim() ? `I am ${who.trim()}.` : 'I am someone.',
-      where.trim() ? `What is left of me answers to ${where.trim()}.` : '',
-      what.trim() ? `I came here to say:\n${what.trim()}` : '',
-    ]
-      .filter(Boolean)
-      .join('\n\n')
-    return `mailto:${RECIPIENT}?subject=${encodeURIComponent(
-      subject,
-    )}&body=${encodeURIComponent(body)}`
-  }, [who, where, what])
-
-  const canSend =
-    who.trim() !== '' && where.trim() !== '' && what.trim() !== ''
+  const canSend = who.trim() !== '' && where.trim() !== '' && what.trim() !== ''
 
   function request(): void {
-    if (!canSend) return
-    window.location.href = mailto
-    setSent(true)
+    if (!canSend || submit.isPending) return
+    submit.mutate(
+      { name: who.trim(), replyTo: where.trim(), message: what.trim() },
+      { onSuccess: () => setSent(true) }
+    )
+  }
+
+  function copyHandle(value: string): void {
+    void navigator.clipboard?.writeText(value)
+    toast.success('Discord handle copied')
   }
 
   return (
@@ -113,10 +185,13 @@ export function Component(): ReactElement {
             <Link
               to={ROUTES.HOME}
               className={styles.brandGroup}
-              aria-label="AngelaMos — home"
+              aria-label="Angelamos — home"
             >
               <span className={styles.brandMono}>{content.brand.mono}</span>
-              <span className={styles.brandMark}>{content.brand.mark}</span>
+              <span className={styles.brandMark}>
+                <span className={styles.brandCopy}>©</span>
+                {content.brand.mark}
+              </span>
             </Link>
             <ul className={styles.navItems}>
               {content.nav.map((item) => (
@@ -150,12 +225,6 @@ export function Component(): ReactElement {
               <span className={styles.specimenLabel}>
                 {content.specimen.label}
               </span>
-              <span className={styles.specimenCaption}>
-                {content.specimen.caption}
-              </span>
-              <span className={styles.specimenPlate}>
-                {content.specimen.plate}
-              </span>
             </figcaption>
           </figure>
 
@@ -171,10 +240,10 @@ export function Component(): ReactElement {
             </div>
 
             {sent ? (
-              <div className={styles.sent} role="status">
+              <output className={styles.sent}>
                 <span className={styles.sentLead}>{content.sentLead}</span>
                 <p className={styles.sentBody}>{content.sentBody}</p>
-              </div>
+              </output>
             ) : (
               <form
                 className={styles.letter}
@@ -189,55 +258,99 @@ export function Component(): ReactElement {
                     className={styles.fill}
                     value={who}
                     onChange={(e) => setWho(e.target.value)}
-                    placeholder="who is asking"
                     aria-label="Your name"
                     autoComplete="name"
                   />
-                  <span className={styles.word}>.</span>
                 </p>
                 <p className={styles.line}>
-                  <span className={styles.word}>What is left of me answers to</span>
+                  <span className={styles.word}>Reach me back at</span>
                   <input
                     className={`${styles.fill} ${styles.fillWide}`}
                     value={where}
                     onChange={(e) => setWhere(e.target.value)}
-                    placeholder="where to return the answer"
-                    aria-label="Your email or address"
-                    inputMode="email"
+                    aria-label="Where to reach you"
                     autoComplete="email"
                   />
-                  <span className={styles.word}>.</span>
                 </p>
                 <p className={styles.line}>
-                  <span className={styles.word}>And I came here to say</span>
+                  <span className={styles.word}>I came here to say</span>
                 </p>
                 <textarea
                   className={styles.fillBlock}
                   value={what}
                   onChange={(e) => setWhat(e.target.value)}
-                  placeholder="…"
+                  placeholder="xx"
                   aria-label="Your message"
-                  rows={2}
+                  rows={1}
                 />
 
                 <div className={styles.send}>
                   <button
                     type="submit"
                     className={styles.request}
-                    disabled={!canSend}
+                    disabled={!canSend || submit.isPending}
                   >
-                    REQUEST AN AUDIENCE
+                    {submit.isPending ? 'SENDING…' : 'REQUEST AN AUDIENCE'}
                   </button>
                   <span className={styles.sendNote}>
-                    {canSend ? 'SEALED' : 'UNFINISHED'}
+                    {submit.isPending
+                      ? 'IN TRANSIT'
+                      : canSend
+                        ? 'SEALED'
+                        : 'UNFINISHED'}
                   </span>
                 </div>
               </form>
             )}
+
+            <div className={styles.lines}>
+              <span className={styles.linesLabel}>{content.linesLabel}</span>
+              <ul className={styles.lineList}>
+                {links.map(({ key, label, Icon, href, copy }) => (
+                  <li key={key}>
+                    {href ? (
+                      <a
+                        className={styles.lineLink}
+                        href={href}
+                        aria-label={label}
+                        title={label}
+                        target={href.startsWith('http') ? '_blank' : undefined}
+                        rel={
+                          href.startsWith('http')
+                            ? 'noreferrer noopener'
+                            : undefined
+                        }
+                      >
+                        <Icon aria-hidden="true" />
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        className={styles.lineLink}
+                        aria-label={label}
+                        title={label}
+                        onClick={() => {
+                          if (copy) copyHandle(copy)
+                        }}
+                      >
+                        <Icon aria-hidden="true" />
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           <footer className={styles.footer}>
-            <span className={styles.footerLeft}>{content.footerLeft}</span>
+            <a
+              className={styles.footerLeft}
+              href={content.footerHref}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              {content.footerLeft}
+            </a>
             <span className={styles.footerCenter}>
               {content.stamp}&nbsp;&nbsp;·&nbsp;&nbsp;{content.date}
             </span>

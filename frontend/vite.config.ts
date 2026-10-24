@@ -32,7 +32,7 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
       proxy: {
         '/api': {
-          target: env.VITE_API_TARGET || 'http://localhost:8000',
+          target: env.VITE_API_TARGET || 'http://localhost:8080',
           changeOrigin: true,
           rewrite: (p) => p.replace(/^\/api/, ''),
         },
