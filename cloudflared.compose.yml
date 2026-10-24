@@ -9,7 +9,7 @@
 services:
   cloudflared:
     image: cloudflare/cloudflared:latest
-    container_name: ${APP_NAME:-001}-tunnel
+    container_name: 001-tunnel
     command: tunnel run --token ${CLOUDFLARE_TUNNEL_TOKEN}
     networks:
       - app
