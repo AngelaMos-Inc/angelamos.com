@@ -32,7 +32,7 @@ services:
         reservations:
           cpus: '0.25'
           memory: 64M
-    restart: unless-stopped
+    restart: always
 
   api:
     build:
@@ -70,7 +70,7 @@ services:
           memory: 256M
         reservations:
           memory: 128M
-    restart: unless-stopped
+    restart: always
 
   postgres:
     image: postgres:18-alpine
@@ -88,7 +88,7 @@ services:
       retries: 5
     networks:
       - app
-    restart: unless-stopped
+    restart: always
 
   redis:
     image: redis:7-alpine
@@ -103,7 +103,7 @@ services:
       retries: 5
     networks:
       - app
-    restart: unless-stopped
+    restart: always
 
 networks:
   app:
