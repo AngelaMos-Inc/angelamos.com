@@ -26,9 +26,9 @@ Company Portfolio
      ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⡿⣿⣿⣿⣿⣿⣿⡿⠋⠉⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
      ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠙⠁⠘⢮⣛⡽⠛⠿⡿⠥⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 
-`Angelamos.com <https://angelamos.com>`_
+`angelamos.com <https://angelamos.com>`_
 
 ----
 
-© 2026 CarterPerez-dev · Angelamos
+© 2026 CarterPerez-dev
 
