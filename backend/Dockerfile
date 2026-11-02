@@ -28,9 +28,6 @@ COPY --from=builder /build/config.yaml /config.yaml
 # Copy migrations (embedded, but useful for debugging)
 COPY --from=builder /build/migrations /migrations
 
-# Copy keys if they exist (for JWT); chown so the nonroot runtime user can read them
-COPY --from=builder --chown=nonroot:nonroot /build/keys /keys
-
 # Run as non-root user
 USER nonroot:nonroot
 

@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	redis_rate "github.com/go-redis/redis_rate/v10"
@@ -21,6 +22,7 @@ import (
 )
 
 type RateLimitConfig struct {
+	Namespace  string
 	Limit      redis_rate.Limit
 	KeyFunc    func(*http.Request) string
 	FailOpen   bool
@@ -38,6 +40,9 @@ func NewRateLimiter(rdb *redis.Client, cfg RateLimitConfig) *RateLimiter {
 	if cfg.KeyFunc == nil {
 		cfg.KeyFunc = KeyByIP
 	}
+	if cfg.Namespace == "" {
+		cfg.Namespace = "global"
+	}
 
 	return &RateLimiter{
 		limiter:  redis_rate.NewLimiter(rdb),
@@ -53,13 +58,12 @@ func (rl *RateLimiter) Handler(next http.Handler) http.Handler {
 			return
 		}
 
-		key := rl.config.KeyFunc(r)
+		key := rl.config.Namespace + ":" + rl.config.KeyFunc(r)
 		res, err := rl.allow(r.Context(), key)
 		if err != nil {
 			if rl.config.FailOpen {
 				slog.Warn("rate limiter error, failing open",
 					"error", err,
-					"key", key,
 				)
 				next.ServeHTTP(w, r)
 				return
@@ -204,7 +208,7 @@ func writeRateLimitExceeded(w http.ResponseWriter, res *redis_rate.Result) {
 
 type limiterEntry struct {
 	limiter    *rate.Limiter
-	lastAccess int64
+	lastAccess atomic.Int64
 }
 
 type localLimiter struct {
@@ -230,7 +234,7 @@ func (l *localLimiter) cleanup() {
 		cutoff := time.Now().Add(-entryTTL).Unix()
 		l.limiters.Range(func(key, value any) bool {
 			entry, ok := value.(*limiterEntry)
-			if ok && entry.lastAccess < cutoff {
+			if ok && entry.lastAccess.Load() < cutoff {
 				l.limiters.Delete(key)
 			}
 			return true
@@ -252,8 +256,8 @@ func (l *localLimiter) allow(
 				rate.Limit(ratePerSec),
 				limit.Burst,
 			),
-			lastAccess: now,
 		}
+		newEntry.lastAccess.Store(now)
 		entryI, _ = l.limiters.LoadOrStore(key, newEntry)
 	}
 
@@ -261,7 +265,7 @@ func (l *localLimiter) allow(
 	if !ok {
 		return nil, fmt.Errorf("invalid limiter entry type")
 	}
-	entry.lastAccess = now
+	entry.lastAccess.Store(now)
 
 	allowed := entry.limiter.Allow()
 

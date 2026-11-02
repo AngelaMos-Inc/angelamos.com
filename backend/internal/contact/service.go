@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"html"
 	"io"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
@@ -45,7 +46,11 @@ type resendPayload struct {
 	HTML    string   `json:"html"`
 }
 
-func (s *Service) Send(ctx context.Context, req SubmitRequest, meta Meta) error {
+func (s *Service) Send(
+	ctx context.Context,
+	req SubmitRequest,
+	meta Meta,
+) error {
 	if s.cfg.ResendAPIKey == "" {
 		return fmt.Errorf("contact: RESEND_API_KEY not configured")
 	}
@@ -61,7 +66,12 @@ func (s *Service) Send(ctx context.Context, req SubmitRequest, meta Meta) error 
 		Subject: fmt.Sprintf("AngelaMos audience - %s", name),
 		Text: fmt.Sprintf(
 			"Name: %s\nReply to: %s\nIP: %s\nUser-Agent: %s\nReceived: %s\n\n%s\n",
-			name, replyTo, meta.IP, meta.UserAgent, received, message,
+			name,
+			replyTo,
+			meta.IP,
+			meta.UserAgent,
+			received,
+			message,
 		),
 		HTML: fmt.Sprintf(
 			"<h2>New audience requested</h2>"+
@@ -98,10 +108,17 @@ func (s *Service) Send(ctx context.Context, req SubmitRequest, meta Meta) error 
 	if err != nil {
 		return fmt.Errorf("contact: send request: %w", err)
 	}
-	defer func() { _ = resp.Body.Close() }()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			slog.Warn("contact: close response", "error", err)
+		}
+	}()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		respBody, _ := io.ReadAll(io.LimitReader(resp.Body, 2048))
+		respBody, err := io.ReadAll(io.LimitReader(resp.Body, 2048))
+		if err != nil {
+			return fmt.Errorf("contact: read error response: %w", err)
+		}
 		return fmt.Errorf(
 			"contact: resend returned %d: %s",
 			resp.StatusCode, string(respBody),

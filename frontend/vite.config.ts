@@ -42,7 +42,7 @@ export default defineConfig(({ mode }) => {
     build: {
       target: 'esnext',
       cssTarget: 'chrome100',
-      sourcemap: isDev ? true : 'hidden',
+      sourcemap: isDev,
       minify: 'oxc',
       rollupOptions: {
         output: {

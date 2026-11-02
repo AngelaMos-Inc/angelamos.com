@@ -13,65 +13,103 @@ server {
     root /usr/share/nginx/html;
     index index.html;
 
+    set_real_ip_from 10.253.249.3;
+    real_ip_header CF-Connecting-IP;
+
     access_log /var/log/nginx/access.log main_timed buffer=32k flush=5s;
     error_log /var/log/nginx/error.log warn;
 
-    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Frame-Options "DENY" always;
     add_header X-Content-Type-Options "nosniff" always;
-    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-XSS-Protection "0" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
     add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://cloudflareinsights.com wss://angelamos.com wss://www.angelamos.com; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'" always;
+    add_header Cache-Control $response_cache_control always;
 
-    location /health {
+    proxy_hide_header X-Frame-Options;
+    proxy_hide_header X-Content-Type-Options;
+    proxy_hide_header X-XSS-Protection;
+    proxy_hide_header Referrer-Policy;
+    proxy_hide_header Permissions-Policy;
+    proxy_hide_header Content-Security-Policy;
+    proxy_hide_header Cache-Control;
+
+    location = /health {
         access_log off;
+        default_type text/plain;
         return 200 "healthy\n";
-        add_header Content-Type text/plain;
     }
 
-    location /assets/ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-        access_log off;
-        try_files $uri =404;
+    location ~ (^|/)\. {
+        return 404;
     }
 
-    location ~* \.(jpg|jpeg|png|gif|ico|svg|webp|avif|woff|woff2|ttf|eot|otf)$ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-        access_log off;
+    location ~* \.map$ {
+        return 404;
     }
 
-    location /api/ws {
+    location = /api/ws {
+        limit_req zone=api_limit burst=20 nodelay;
+        limit_conn conn_limit 10;
         proxy_pass http://api_backend/ws;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
-        proxy_set_header Host $host;
+        proxy_set_header Host $http_host;
         proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-For $remote_addr;
         proxy_read_timeout 3600s;
         proxy_send_timeout 3600s;
         proxy_buffering off;
     }
 
-    location /api/ {
+    location = /api {
+        proxy_pass http://api_backend/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+    }
+
+    location ^~ /api/ {
+        limit_req zone=api_limit burst=20 nodelay;
         proxy_pass http://api_backend/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-For $remote_addr;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_read_timeout 60s;
     }
 
-    location / {
-        add_header Cache-Control "no-cache, must-revalidate";
-        try_files $uri $uri/ /index.html;
+    location ~ /install\.sh$ {
+        try_files $uri =404;
     }
 
-    location ~ /\. {
-        deny all;
+    location /assets/ {
         access_log off;
-        log_not_found off;
+        try_files $uri =404;
+    }
+
+    location ~* \.(js|css|sh|jpg|jpeg|png|gif|ico|svg|webp|avif|woff|woff2|ttf|eot|otf)$ {
+        access_log off;
+        try_files $uri =404;
+    }
+
+    location = / {
+        try_files /index.html =404;
+    }
+
+    location ~ ^/(company|contact|index|work-with-me)/?$ {
+        try_files /index.html =404;
+    }
+
+    location / {
+        try_files $uri @not_found;
+    }
+
+    location @not_found {
+        error_page 404 /index.html;
+        return 404;
     }
 }

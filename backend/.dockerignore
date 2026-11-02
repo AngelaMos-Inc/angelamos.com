@@ -1,0 +1,11 @@
+# ©AngelaMos | 2026
+# .dockerignore
+
+.env
+.env.*
+keys/
+bin/
+tmp/
+coverage.out
+coverage.html
+*.log

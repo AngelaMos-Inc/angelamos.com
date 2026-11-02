@@ -172,7 +172,11 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.service.Logout(r.Context(), req.RefreshToken, userID); err != nil {
+	if err := h.service.Logout(
+		r.Context(),
+		req.RefreshToken,
+		userID,
+	); err != nil {
 		if errors.Is(err, core.ErrForbidden) {
 			core.Forbidden(w, "cannot revoke another user's token")
 			return
@@ -228,7 +232,11 @@ func (h *Handler) RevokeSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.service.RevokeSession(r.Context(), userID, sessionID); err != nil {
+	if err := h.service.RevokeSession(
+		r.Context(),
+		userID,
+		sessionID,
+	); err != nil {
 		if errors.Is(err, core.ErrNotFound) {
 			core.NotFound(w, "session")
 			return
@@ -262,7 +270,12 @@ func (h *Handler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.service.ChangePassword(r.Context(), userID, req.CurrentPassword, req.NewPassword); err != nil {
+	if err := h.service.ChangePassword(
+		r.Context(),
+		userID,
+		req.CurrentPassword,
+		req.NewPassword,
+	); err != nil {
 		if errors.Is(err, ErrInvalidCredentials) {
 			core.JSONError(
 				w,

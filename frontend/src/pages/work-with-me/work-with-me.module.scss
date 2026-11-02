@@ -3,20 +3,20 @@
 // work-with-me.module.scss
 // ===================
 
-$void: #0a0a0b;
-$void-2: #101013;
-$void-3: #060607;
-$bone: #ecebe4;
-$bone-dim: rgba(236, 235, 228, 0.6);
-$bone-faint: rgba(236, 235, 228, 0.42);
-$bone-ghost: rgba(236, 235, 228, 0.13);
-$line: rgba(236, 235, 228, 0.14);
-$line-bright: rgba(236, 235, 228, 0.27);
-$line-ghost: rgba(236, 235, 228, 0.05);
-$signal: rgba(255, 74, 26, 0.80);
-$signal-fade: rgba(255, 74, 26, 0.50);
-$signal-2: rgba(255, 114, 68, 0.70);
-$live: #2cf0c9;
+$void: var(--work-ground);
+$void-2: var(--work-panel);
+$void-3: var(--work-inset);
+$bone: var(--work-ink);
+$bone-dim: var(--work-muted);
+$bone-faint: var(--work-faint);
+$bone-ghost: var(--work-ghost);
+$line: var(--work-line);
+$line-bright: var(--work-line-bright);
+$line-ghost: var(--work-line-ghost);
+$signal: var(--work-signal);
+$signal-fade: var(--work-signal-fade);
+$signal-2: var(--work-signal-hover);
+$live: var(--work-live);
 
 $display: 'Archivo', system-ui, -apple-system, sans-serif;
 $mono: 'Geist Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
@@ -25,6 +25,30 @@ $stamp: 'Martian Mono', 'Geist Mono', monospace;
 $stencil: 'Saira Stencil One', 'Archivo', sans-serif;
 
 .page {
+  :global([data-theme='light']) & {
+    .masthead {
+      background: rgb(242 239 232 / 94%);
+    }
+
+    .scan {
+      opacity: 0.08;
+    }
+
+    .grain {
+      opacity: 0.1;
+    }
+
+    .angel {
+      filter: grayscale(1) contrast(1.38) invert(1);
+      mix-blend-mode: multiply;
+      opacity: 0.15;
+    }
+
+    figcaption {
+      color: #ecebe4;
+    }
+  }
+
   position: relative;
   width: 100%;
   min-height: 100dvh;
@@ -115,6 +139,12 @@ $stencil: 'Saira Stencil One', 'Archivo', sans-serif;
   letter-spacing: 0.34em;
   text-transform: uppercase;
   color: $bone-faint;
+}
+
+.mhActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .mhStatus {
@@ -1349,7 +1379,7 @@ $stencil: 'Saira Stencil One', 'Archivo', sans-serif;
   }
 
   .hero {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 2.4rem;
     min-height: 0;
     padding-top: clamp(2.4rem, 6vh, 4rem);
@@ -1386,6 +1416,22 @@ $stencil: 'Saira Stencil One', 'Archivo', sans-serif;
 }
 
 @media (max-width: 720px) {
+  .masthead {
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+  }
+
+  .mhId {
+    flex: 1;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.6rem;
+  }
+
+  .mhStatus {
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
+  }
+
   .mhDoc {
     display: none;
   }
@@ -1395,7 +1441,12 @@ $stencil: 'Saira Stencil One', 'Archivo', sans-serif;
   }
 
   .lede {
-    font-size: clamp(2.6rem, 15vw, 4.4rem);
+    font-size: clamp(1.8rem, 8.8vw, 3.8rem);
+  }
+
+  .heroLeft,
+  .instrument {
+    min-width: 0;
   }
 
   .offers {

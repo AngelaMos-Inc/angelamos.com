@@ -18,12 +18,14 @@ services:
         - VITE_APP_TITLE=${VITE_APP_TITLE:-001}
     container_name: 001-nginx
     ports:
-      - "${NGINX_HOST_PORT:-12491}:80"
+      - "127.0.0.1:${NGINX_HOST_PORT:-42491}:80"
     depends_on:
       api:
         condition: service_started
     networks:
-      - app
+      app:
+      ingress:
+        ipv4_address: 10.253.249.2
     deploy:
       resources:
         limits:
@@ -108,6 +110,11 @@ services:
 networks:
   app:
     driver: bridge
+  ingress:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.253.249.0/29
 
 volumes:
   pgdata:

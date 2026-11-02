@@ -18,7 +18,7 @@ func SecurityHeaders(isProduction bool) func(http.Handler) http.Handler {
 
 			h.Set("X-Content-Type-Options", "nosniff")
 			h.Set("X-Frame-Options", "DENY")
-			h.Set("X-XSS-Protection", "1; mode=block")
+			h.Set("X-XSS-Protection", "0")
 			h.Set("Referrer-Policy", "strict-origin-when-cross-origin")
 			h.Set(
 				"Permissions-Policy",
@@ -28,7 +28,7 @@ func SecurityHeaders(isProduction bool) func(http.Handler) http.Handler {
 			if isProduction {
 				h.Set(
 					"Strict-Transport-Security",
-					"max-age=31536000; includeSubDomains; preload",
+					"max-age=31536000",
 				)
 			}
 
@@ -48,6 +48,7 @@ func buildCSP(isProduction bool) string {
 		"font-src 'self'",
 		"connect-src 'self'",
 		"frame-ancestors 'none'",
+		"object-src 'none'",
 		"base-uri 'self'",
 		"form-action 'self'",
 	}

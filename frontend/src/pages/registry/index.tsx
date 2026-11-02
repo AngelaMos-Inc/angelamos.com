@@ -11,6 +11,7 @@ import {
   useState,
 } from 'react'
 import { Link } from 'react-router-dom'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { ROUTES } from '@/config'
 import { INSTRUMENTS, type Instrument } from '@/data/instruments'
 import styles from './registry.module.scss'
@@ -141,6 +142,7 @@ export function Component(): ReactElement {
                 >
                   {item.label}
                 </Link>
+                {item.to === ROUTES.CONTACT && <ThemeToggle />}
               </li>
             ))}
           </ul>

@@ -8,6 +8,7 @@
 @forward 'styles/mixins';
 
 @use 'styles/reset';
+@use 'styles/theme';
 
 #root {
   min-height: 100vh;

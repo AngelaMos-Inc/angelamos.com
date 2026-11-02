@@ -38,8 +38,8 @@ cors:
     - "http://localhost:3000"
     - "http://localhost:3420"
     - "http://localhost:8005"
-    - "https://certgames.com"
-    - "https://www.certgames.com"
+    - "https://angelamos.com"
+    - "https://www.angelamos.com"
   allowed_methods:
     - "GET"
     - "POST"

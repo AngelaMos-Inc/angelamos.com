@@ -5,15 +5,15 @@
 
 @use '@/styles/tokens' as *;
 
-$void: hsl(0, 0%, 5.5%);
-$bone: hsl(40, 9%, 90%);
-$bone-soft: hsla(40, 9%, 90%, 0.56);
-$bone-faint: hsla(40, 9%, 90%, 0.34);
-$bone-ghost: hsla(40, 9%, 90%, 0.16);
-$cold: hsl(202, 58%, 64%);
-$ink: hsla(202, 16%, 70%, 0.62);
-$line: hsla(40, 9%, 88%, 0.30);
-$line-soft: hsla(40, 9%, 88%, 0.13);
+$void: var(--page-ground);
+$bone: var(--page-ink);
+$bone-soft: var(--page-muted);
+$bone-faint: var(--page-faint);
+$bone-ghost: var(--page-ghost);
+$cold: var(--page-accent);
+$ink: var(--page-code);
+$line: var(--page-line);
+$line-soft: var(--page-line-soft);
 
 $display: 'Cormorant', 'Playfair Display', Georgia, serif;
 $serif: 'Playfair Display', 'DM Serif Display', Georgia, serif;
@@ -28,6 +28,39 @@ $sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .page {
+  :global([data-theme='light']) & {
+    .grain {
+      opacity: 0.12;
+    }
+
+    .halftone {
+      opacity: 0.06;
+    }
+
+    .vignette {
+      opacity: 0.05;
+    }
+
+    .title {
+      text-shadow: none;
+    }
+
+    .specimenImg {
+      filter: grayscale(1) invert(1) contrast(1.08);
+      mix-blend-mode: multiply;
+    }
+
+    .specimen {
+      mix-blend-mode: multiply;
+    }
+
+    .ghost {
+      filter: grayscale(1) invert(1);
+      mix-blend-mode: multiply;
+      opacity: 0.025;
+    }
+  }
+
   position: relative;
   flex: 1;
   width: 100%;
@@ -178,6 +211,10 @@ $sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   color: $bone-soft;
   padding-left: 1.2vmin;
   border-left: 1px solid $line-soft;
+
+  @media (width <= 420px) {
+    display: none;
+  }
 }
 
 .brandCopy {
@@ -195,6 +232,16 @@ $sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   list-style: none;
   margin: 0;
   padding: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  @media (width <= 520px) {
+    gap: 0.65rem;
+  }
 }
 
 .navLink {

@@ -1,0 +1,12 @@
+# ©AngelaMos | 2026
+# .dockerignore
+
+.git
+**/node_modules
+**/dist
+**/.env
+**/.env.*
+**/*.tsbuildinfo
+**/.biome_cache
+backend
+.artifacts

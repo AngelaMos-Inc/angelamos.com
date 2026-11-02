@@ -51,7 +51,12 @@ func NewTelemetry(
 			otlptracegrpc.WithTLSCredentials(insecure.NewCredentials()),
 		)
 	} else {
-		opts = append(opts, otlptracegrpc.WithTLSCredentials(credentials.NewClientTLSFromCert(nil, "")))
+		opts = append(
+			opts,
+			otlptracegrpc.WithTLSCredentials(
+				credentials.NewClientTLSFromCert(nil, ""),
+			),
+		)
 	}
 
 	exporter, err := otlptracegrpc.New(ctx, opts...)

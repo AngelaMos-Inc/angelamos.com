@@ -6,6 +6,7 @@
 import type { ReactElement } from 'react'
 import { Link } from 'react-router-dom'
 import { useRepoStats } from '@/api'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { ROUTES } from '@/config'
 import { INSTRUMENTS } from '@/data/instruments'
 import styles from './company.module.scss'
@@ -184,6 +185,7 @@ export function Component(): ReactElement {
                 >
                   {item.label}
                 </Link>
+                {item.to === ROUTES.CONTACT && <ThemeToggle />}
               </li>
             ))}
           </ul>
@@ -229,9 +231,7 @@ export function Component(): ReactElement {
               <span className={styles.no}>{arm.no}</span>
               <h2 className={styles.label}>{arm.label}</h2>
               <p className={styles.desc}>{arm.desc}</p>
-              <span className={styles.meta}>
-                {metaFor(arm, tools, stars)}
-              </span>
+              <span className={styles.meta}>{metaFor(arm, tools, stars)}</span>
               <Target arm={arm} />
             </li>
           ))}

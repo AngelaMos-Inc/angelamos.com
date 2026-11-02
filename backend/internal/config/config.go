@@ -131,13 +131,19 @@ func Load(configPath string) (*Config, error) {
 		}
 
 		if configPath != "" {
-			if err := k.Load(file.Provider(configPath), yaml.Parser()); err != nil {
+			if err := k.Load(
+				file.Provider(configPath),
+				yaml.Parser(),
+			); err != nil {
 				loadErr = fmt.Errorf("load config file: %w", err)
 				return
 			}
 		}
 
-		if err := k.Load(env.Provider("", ".", envKeyReplacer), nil); err != nil {
+		if err := k.Load(
+			env.Provider("", ".", envKeyReplacer),
+			nil,
+		); err != nil {
 			loadErr = fmt.Errorf("load env vars: %w", err)
 			return
 		}

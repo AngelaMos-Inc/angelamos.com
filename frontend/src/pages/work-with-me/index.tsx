@@ -17,6 +17,7 @@ import {
   FaYoutube,
 } from 'react-icons/fa6'
 import { useLiveFollowers } from '@/api'
+import { ThemeToggle } from '@/components/theme-toggle'
 import styles from './work-with-me.module.scss'
 
 type Channel = {
@@ -133,6 +134,17 @@ function useCountUp(target: number | null): number {
   return n
 }
 
+type FeedState = 'live' | 'cached' | 'sync' | 'standby'
+
+function getFeedState(
+  hasReal: boolean,
+  isLive: boolean,
+  isLoading: boolean
+): FeedState {
+  if (hasReal) return isLive ? 'live' : 'cached'
+  return isLoading ? 'sync' : 'standby'
+}
+
 export function Component(): ReactElement {
   const root = useRef<HTMLDivElement>(null)
   const { followers, isLive, stats, isLoading } = useLiveFollowers()
@@ -141,7 +153,7 @@ export function Component(): ReactElement {
   const hasReal = followers != null && configured !== false
   const shown = useCountUp(hasReal ? followers : null)
 
-  const feedState = hasReal ? (isLive ? 'live' : 'cached') : isLoading ? 'sync' : 'standby'
+  const feedState = getFeedState(hasReal, isLive, isLoading)
 
   const [reduce, setReduce] = useState(false)
   useEffect(() => {
@@ -179,11 +191,14 @@ export function Component(): ReactElement {
           <b>CARTER&nbsp;PEREZ</b>
           <i>/ @carterperez.dev</i>
         </span>
-        <span className={styles.mhDoc}>© Anglemos</span>
-        <span className={styles.mhStatus} data-state={feedState}>
-          <span className={styles.led} aria-hidden="true" />
-          Available
-        </span>
+        <span className={styles.mhDoc}>© AngelaMos</span>
+        <div className={styles.mhActions}>
+          <span className={styles.mhStatus} data-state={feedState}>
+            <span className={styles.led} aria-hidden="true" />
+            Available
+          </span>
+          <ThemeToggle />
+        </div>
       </header>
 
       <div className={styles.rail} aria-hidden="true">
@@ -381,7 +396,7 @@ export function Component(): ReactElement {
                   <span>FEED</span>
                   <b data-state={feedState}>
                     <span className={styles.led} aria-hidden="true" />
-                    {feedState === 'live' ? 'LIVE' : feedState === 'cached' ? 'CACHED' : feedState === 'sync' ? 'SYNC' : 'STANDBY'}
+                    {feedState.toUpperCase()}
                   </b>
                 </div>
               </div>
@@ -489,7 +504,7 @@ export function Component(): ReactElement {
 
       <div className={styles.scan} aria-hidden="true" />
       <div className={styles.grain} aria-hidden="true">
-        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" preserveAspectRatio="none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" preserveAspectRatio="none" aria-hidden="true">
           <filter id="wwm-grain">
             <feTurbulence type="turbulence" baseFrequency="1.55" numOctaves="1" seed="2" stitchTiles="stitch">
               {reduce ? null : (

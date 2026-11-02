@@ -17,6 +17,7 @@ build/
 
 # Vite / tooling caches
 .vite/
+.artifacts/
 *.tsbuildinfo
 frontend/*.tsbuildinfo
 
