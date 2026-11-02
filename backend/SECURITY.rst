@@ -46,9 +46,12 @@ per client IP. The API has a five-second header timeout and a 16 KiB header cap.
 Instagram request errors omit the token-bearing URL and upstream error bodies.
 
 Browser response headers live at the nginx server level, including cache policy,
-so per-location cache directives cannot suppress them. Scripts must come from
-the site's origin. Inline styles remain allowed for React styles and existing
-visual effects. Production source maps are neither generated nor served.
+so per-location cache directives cannot suppress them. Scripts are restricted to
+the site's origin and ``https://static.cloudflareinsights.com`` for the existing
+Cloudflare analytics beacon. Analytics connections also allow
+``https://cloudflareinsights.com``. Inline styles remain allowed for React styles
+and existing visual effects. Production source maps are neither generated nor
+served.
 
 Static-analysis exceptions
 ==========================
@@ -81,5 +84,7 @@ The email transport was mocked in tests; no test email was sent.
 References: `nginx header inheritance
 <https://nginx.org/en/docs/http/ngx_http_headers_module.html#add_header>`_,
 `Cloudflare visitor headers
-<https://developers.cloudflare.com/fundamentals/reference/http-headers/>`_, and
+<https://developers.cloudflare.com/fundamentals/reference/http-headers/>`_,
+`Cloudflare analytics CSP requirements
+<https://developers.cloudflare.com/fundamentals/reference/policies-compliances/content-security-policies/>`_, and
 `Go request body limits <https://pkg.go.dev/net/http#MaxBytesReader>`_.
