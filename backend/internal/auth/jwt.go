@@ -98,7 +98,11 @@ func GenerateKeyPair(privateKeyPath, publicKeyPath string) error {
 		return fmt.Errorf("encode private key: %w", err)
 	}
 
-	if writeErr := os.WriteFile(privateKeyPath, privatePEM, 0o600); writeErr != nil {
+	if writeErr := os.WriteFile(
+		privateKeyPath,
+		privatePEM,
+		0o600,
+	); writeErr != nil {
 		return fmt.Errorf("write private key: %w", writeErr)
 	}
 
@@ -113,7 +117,11 @@ func GenerateKeyPair(privateKeyPath, publicKeyPath string) error {
 	}
 
 	//nolint:gosec // G306: public key is intentionally world-readable
-	if writeErr := os.WriteFile(publicKeyPath, publicPEM, 0o644); writeErr != nil {
+	if writeErr := os.WriteFile(
+		publicKeyPath,
+		publicPEM,
+		0o644,
+	); writeErr != nil {
 		return fmt.Errorf("write public key: %w", writeErr)
 	}
 

@@ -1,0 +1,79 @@
+// ©AngelaMos | 2026
+// _theme.scss
+
+:root {
+  --page-ground: hsl(0, 0%, 5.5%);
+  --page-ink: hsl(40, 9%, 90%);
+  --page-muted: hsl(40 9% 90% / 56%);
+  --page-faint: hsl(40 9% 90% / 34%);
+  --page-ghost: hsl(40 9% 90% / 16%);
+  --page-accent: hsl(202, 58%, 64%);
+  --page-code: hsl(202 16% 70% / 62%);
+  --page-line: hsl(40 9% 88% / 30%);
+  --page-line-soft: hsl(40 9% 88% / 13%);
+  --page-hover: hsl(40 9% 90% / 2.5%);
+  --toast-ground: hsl(0, 0%, 12.2%);
+  --work-ground: #0a0a0b;
+  --work-panel: #101013;
+  --work-inset: #060607;
+  --work-ink: #ecebe4;
+  --work-muted: rgb(236 235 228 / 60%);
+  --work-faint: rgb(236 235 228 / 42%);
+  --work-ghost: rgb(236 235 228 / 13%);
+  --work-line: rgb(236 235 228 / 14%);
+  --work-line-bright: rgb(236 235 228 / 27%);
+  --work-line-ghost: rgb(236 235 228 / 5%);
+  --work-signal: rgb(255 74 26 / 80%);
+  --work-signal-fade: rgb(255 74 26 / 50%);
+  --work-signal-hover: rgb(255 114 68 / 70%);
+  --work-live: #2cf0c9;
+}
+
+html[data-theme='light'] {
+  color-scheme: light;
+
+  --page-ground: #f2efe8;
+  --page-ink: #272722;
+  --page-muted: #57584f;
+  --page-faint: #6e7066;
+  --page-ghost: #a3a397;
+  --page-accent: #28617b;
+  --page-code: #4d636a;
+  --page-line: #a9ada1;
+  --page-line-soft: #d0d1c5;
+  --page-hover: rgb(39 39 34 / 3.5%);
+  --toast-ground: #faf8f2;
+  --work-ground: #f2efe8;
+  --work-panel: #e9e5dc;
+  --work-inset: #f9f7f1;
+  --work-ink: #272722;
+  --work-muted: #56574e;
+  --work-faint: #696b61;
+  --work-ghost: #a6a79b;
+  --work-line: #cecec1;
+  --work-line-bright: #aaa99b;
+  --work-line-ghost: rgb(67 70 54 / 6%);
+  --work-signal: #a9361c;
+  --work-signal-fade: #a24830;
+  --work-signal-hover: #8b2a15;
+  --work-live: #176954;
+}
+
+html[data-page='inner'] {
+  background: var(--page-ground);
+  color-scheme: dark;
+
+  &[data-theme='light'] {
+    color-scheme: light;
+  }
+
+  body {
+    color: var(--page-ink);
+    background: var(--page-ground);
+  }
+
+  ::selection {
+    color: var(--page-ground);
+    background: var(--page-accent);
+  }
+}

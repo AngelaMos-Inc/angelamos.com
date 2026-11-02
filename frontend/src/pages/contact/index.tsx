@@ -20,6 +20,7 @@ import {
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useSubmitContact } from '@/api'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { ROUTES } from '@/config'
 import styles from './contact.module.scss'
 
@@ -36,7 +37,7 @@ const links: LineLink[] = [
     key: 'instagram',
     label: 'Instagram',
     Icon: FaInstagram,
-    href: 'https://www.instagram.com/carrterperez.dev',
+    href: 'https://www.instagram.com/carterperez.dev',
   },
   {
     key: 'tiktok',
@@ -205,6 +206,7 @@ export function Component(): ReactElement {
                   >
                     {item.label}
                   </Link>
+                  {item.to === ROUTES.CONTACT && <ThemeToggle />}
                 </li>
               ))}
             </ul>
@@ -260,6 +262,8 @@ export function Component(): ReactElement {
                     onChange={(e) => setWho(e.target.value)}
                     aria-label="Your name"
                     autoComplete="name"
+                    maxLength={120}
+                    required
                   />
                 </p>
                 <p className={styles.line}>
@@ -270,6 +274,8 @@ export function Component(): ReactElement {
                     onChange={(e) => setWhere(e.target.value)}
                     aria-label="Where to reach you"
                     autoComplete="email"
+                    maxLength={200}
+                    required
                   />
                 </p>
                 <p className={styles.line}>
@@ -282,6 +288,8 @@ export function Component(): ReactElement {
                   placeholder="xx"
                   aria-label="Your message"
                   rows={1}
+                  maxLength={5000}
+                  required
                 />
 
                 <div className={styles.send}>

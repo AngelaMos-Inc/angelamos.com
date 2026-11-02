@@ -5,6 +5,19 @@ version: "2"
 
 linters:
   default: none
+  exclusions:
+    rules:
+      - path: internal/(auth|user)/dto\.go
+        linters: [gosec]
+        text: 'G117: Exported struct field'
+      - path: internal/config/config\.go
+        linters: [gosec]
+        text: 'G101: Potential hardcoded credentials'
+        source: '^var envKeyMap ='
+      - path: internal/(contact/service|github/client|social/client)\.go
+        linters: [gosec]
+        text: 'G704: SSRF via taint analysis'
+        source: 'resp, err := (s\.client|c\.http)\.Do\('
   enable:
     - errcheck
     - govet

@@ -248,7 +248,11 @@ func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	requesterID := middleware.GetUserID(r.Context())
 	targetID := chi.URLParam(r, "userID")
 
-	if err := h.service.CanDeleteUser(r.Context(), requesterID, targetID); err != nil {
+	if err := h.service.CanDeleteUser(
+		r.Context(),
+		requesterID,
+		targetID,
+	); err != nil {
 		if errors.Is(err, core.ErrForbidden) {
 			core.Forbidden(w, "insufficient permissions")
 			return

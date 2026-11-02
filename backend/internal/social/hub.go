@@ -46,7 +46,11 @@ func NewHub(service *Service, rdb *redis.Client, logger *slog.Logger) *Hub {
 // Run subscribes to Redis pub/sub and fans every update out to all clients.
 func (h *Hub) Run(ctx context.Context) {
 	sub := h.redis.Subscribe(ctx, updatesChannel)
-	defer func() { _ = sub.Close() }()
+	defer func() {
+		if err := sub.Close(); err != nil {
+			h.logger.Warn("social: close subscription", "error", err)
+		}
+	}()
 
 	h.logger.Info("social hub subscribed", "channel", updatesChannel)
 	ch := sub.Channel()
@@ -65,9 +69,7 @@ func (h *Hub) Run(ctx context.Context) {
 }
 
 func (h *Hub) ServeWS(w http.ResponseWriter, r *http.Request) {
-	conn, err := websocket.Accept(w, r, &websocket.AcceptOptions{
-		InsecureSkipVerify: true,
-	})
+	conn, err := websocket.Accept(w, r, nil)
 	if err != nil {
 		h.logger.Warn("ws accept failed", "error", err)
 		return
@@ -86,7 +88,9 @@ func (h *Hub) ServeWS(w http.ResponseWriter, r *http.Request) {
 
 	ctx := conn.CloseRead(r.Context())
 	h.writePump(ctx, cl)
-	_ = conn.Close(websocket.StatusNormalClosure, "")
+	if err := conn.Close(websocket.StatusNormalClosure, ""); err != nil {
+		h.logger.Debug("social: close websocket", "error", err)
+	}
 }
 
 func (h *Hub) writePump(ctx context.Context, cl *wsClient) {

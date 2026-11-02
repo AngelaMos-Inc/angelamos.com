@@ -12,7 +12,8 @@ services:
     container_name: 001-tunnel
     command: tunnel run --token ${CLOUDFLARE_TUNNEL_TOKEN}
     networks:
-      - app
+      ingress:
+        ipv4_address: 10.253.249.3
     depends_on:
       nginx:
         condition: service_started

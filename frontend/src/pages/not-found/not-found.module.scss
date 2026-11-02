@@ -1,0 +1,189 @@
+// ©AngelaMos | 2026
+// not-found.module.scss
+
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/assets/404/instrument-serif-latin-400-normal.woff2') format('woff2');
+}
+
+.page {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  min-height: 100dvh;
+  color: var(--page-ink);
+  background: var(--page-ground);
+  font-family: 'Geist Mono', ui-monospace, monospace;
+}
+
+.shell {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1240px;
+  padding: 0 1.25rem;
+  margin: 0 auto;
+
+  @media (width >= 768px) {
+    padding: 0 2.5rem;
+  }
+}
+
+.runningHead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+
+.colophon,
+.headNav,
+.section,
+.figureCaption,
+.echo,
+.back {
+  font-size: 0.5625rem;
+  font-weight: 400;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.colophon {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  color: var(--page-muted);
+  text-decoration: none;
+}
+
+.mark {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 1rem;
+  font-style: italic;
+  letter-spacing: 0;
+  color: var(--page-ink);
+}
+
+.rule {
+  color: var(--page-ghost);
+}
+
+.headEnd,
+.headNav {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.headEnd {
+  gap: 0.5rem;
+}
+
+.headNav a,
+.back {
+  color: var(--page-muted);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--page-ink);
+  }
+}
+
+.page a:focus-visible {
+  outline: 1px solid var(--page-accent);
+  outline-offset: 5px;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 34rem;
+  padding: 3rem 0 4rem;
+  margin: 0 auto;
+  text-align: center;
+  border-top: 1px solid var(--page-line-soft);
+
+  @media (width >= 768px) {
+    padding: 4rem 0 5rem;
+  }
+}
+
+.section {
+  margin-bottom: 2.5rem;
+  color: var(--page-muted);
+}
+
+.figure {
+  width: 100%;
+}
+
+.figureImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--page-line-soft);
+}
+
+.figureCaption {
+  padding-top: 0.75rem;
+  color: var(--page-faint);
+  text-align: right;
+}
+
+.title {
+  margin-top: 2.5rem;
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(2.75rem, 7vw, 4rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+
+.line {
+  margin-top: 1.25rem;
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  color: var(--page-muted);
+  text-transform: uppercase;
+}
+
+.echo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: 3rem;
+}
+
+.echoPath {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  color: var(--page-faint);
+}
+
+.echoRule {
+  width: 2rem;
+  height: 1px;
+  margin: 1rem 0;
+  background: var(--page-line);
+}
+
+.echoBody {
+  max-width: 36ch;
+  line-height: 1.75;
+  color: var(--page-muted);
+}
+
+.back {
+  margin-top: 3rem;
+  border-bottom: 1px solid var(--page-line);
+}

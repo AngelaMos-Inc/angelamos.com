@@ -5,6 +5,9 @@ package contact
 
 import (
 	"encoding/json"
+	"errors"
+	"io"
+	"mime"
 	"net"
 	"net/http"
 	"strings"
@@ -35,11 +38,31 @@ func (h *Handler) RegisterRoutes(
 }
 
 func (h *Handler) Submit(w http.ResponseWriter, r *http.Request) {
-	var req SubmitRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		core.BadRequest(w, "invalid request body")
+	mediaType, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
+	if err != nil || mediaType != "application/json" {
+		core.JSONError(w, core.NewAppError(
+			core.ErrInvalidInput, "Content-Type must be application/json",
+			http.StatusUnsupportedMediaType, "UNSUPPORTED_MEDIA_TYPE",
+		))
 		return
 	}
+
+	r.Body = http.MaxBytesReader(w, r.Body, 32<<10)
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	var req SubmitRequest
+	if err := decoder.Decode(&req); err != nil {
+		invalidBody(w, err)
+		return
+	}
+	if err := decoder.Decode(new(any)); !errors.Is(err, io.EOF) {
+		invalidBody(w, err)
+		return
+	}
+
+	req.Name = strings.TrimSpace(req.Name)
+	req.ReplyTo = strings.TrimSpace(req.ReplyTo)
+	req.Message = strings.TrimSpace(req.Message)
 
 	if err := h.validator.Struct(req); err != nil {
 		core.BadRequest(w, core.FormatValidationError(err))
@@ -57,6 +80,18 @@ func (h *Handler) Submit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	core.OK(w, SubmitResponse{Status: "sent"})
+}
+
+func invalidBody(w http.ResponseWriter, err error) {
+	var tooLarge *http.MaxBytesError
+	if errors.As(err, &tooLarge) {
+		core.JSONError(w, core.NewAppError(
+			core.ErrInvalidInput, "request body is too large",
+			http.StatusRequestEntityTooLarge, "PAYLOAD_TOO_LARGE",
+		))
+		return
+	}
+	core.BadRequest(w, "invalid request body")
 }
 
 func extractIP(r *http.Request) string {

@@ -3,14 +3,14 @@
 // company.module.scss
 // ===================
 
-$void: hsl(0, 0%, 5.5%);
-$bone: hsl(40, 9%, 90%);
-$bone-soft: hsla(40, 9%, 90%, 0.56);
-$bone-faint: hsla(40, 9%, 90%, 0.34);
-$cold: hsl(202, 58%, 64%);
-$ink: hsla(202, 16%, 70%, 0.62);
-$line: hsla(40, 9%, 88%, 0.3);
-$line-soft: hsla(40, 9%, 88%, 0.13);
+$void: var(--page-ground);
+$bone: var(--page-ink);
+$bone-soft: var(--page-muted);
+$bone-faint: var(--page-faint);
+$cold: var(--page-accent);
+$ink: var(--page-code);
+$line: var(--page-line);
+$line-soft: var(--page-line-soft);
 
 $display: 'Cormorant', 'Playfair Display', Georgia, serif;
 $slab: 'Anton', 'Archivo', 'Helvetica Neue', Impact, sans-serif;
@@ -28,6 +28,34 @@ $ease: cubic-bezier(0.2, 0, 0.2, 1);
 }
 
 .page {
+  :global([data-theme='light']) & {
+    .grain {
+      opacity: 0.12;
+    }
+
+    .halftone {
+      opacity: 0.06;
+    }
+
+    .vignette {
+      opacity: 0.05;
+    }
+
+    .figure {
+      filter: grayscale(1) contrast(1.38) invert(1);
+      mix-blend-mode: multiply;
+      opacity: 0.4;
+    }
+
+    .figureFade {
+      opacity: 0.2;
+    }
+
+    .title {
+      text-shadow: none;
+    }
+  }
+
   position: relative;
   flex: 1;
   width: 100%;
@@ -152,6 +180,10 @@ $ease: cubic-bezier(0.2, 0, 0.2, 1);
   color: $bone-soft;
   padding-left: 1.2vmin;
   border-left: 1px solid $line-soft;
+
+  @media (width <= 420px) {
+    display: none;
+  }
 }
 
 .brandCopy {
@@ -169,6 +201,12 @@ $ease: cubic-bezier(0.2, 0, 0.2, 1);
   list-style: none;
   margin: 0;
   padding: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
 }
 
 .navLink {
@@ -638,7 +676,7 @@ $ease: cubic-bezier(0.2, 0, 0.2, 1);
   }
 
   .navItems {
-    gap: 1.1rem;
+    gap: 0.65rem;
   }
 
   .tallySub {

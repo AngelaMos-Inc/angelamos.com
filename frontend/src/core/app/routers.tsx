@@ -5,7 +5,7 @@
 
 import { createBrowserRouter, type RouteObject } from 'react-router-dom'
 import { ROUTES } from '@/config'
-import { Shell } from './shell'
+import { ThemeLayout } from './theme-layout'
 
 const routes: RouteObject[] = [
   {
@@ -29,22 +29,11 @@ const routes: RouteObject[] = [
     lazy: () => import('@/pages/work-with-me'),
   },
   {
-    element: <Shell />,
-    children: [
-      {
-        path: ROUTES.DASHBOARD,
-        lazy: () => import('@/pages/dashboard'),
-      },
-      {
-        path: ROUTES.SETTINGS,
-        lazy: () => import('@/pages/settings'),
-      },
-    ],
-  },
-  {
     path: '*',
-    lazy: () => import('@/pages/landing'),
+    lazy: () => import('@/pages/not-found'),
   },
 ]
 
-export const router = createBrowserRouter(routes)
+export const router = createBrowserRouter([
+  { element: <ThemeLayout />, children: routes },
+])

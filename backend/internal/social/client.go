@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"time"
@@ -64,15 +65,26 @@ func (c *Client) Fetch(ctx context.Context) (*Stats, error) {
 
 	resp, err := c.http.Do(req)
 	if err != nil {
+		var urlErr *url.Error
+		if errors.As(err, &urlErr) {
+			err = urlErr.Err
+		}
 		return nil, fmt.Errorf("social: request: %w", err)
 	}
-	defer func() { _ = resp.Body.Close() }()
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			slog.Warn("social: close response", "error", closeErr)
+		}
+	}()
 
-	body, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
+	body, err := io.ReadAll(io.LimitReader(resp.Body, 4096))
+	if err != nil {
+		return nil, fmt.Errorf("social: read response: %w", err)
+	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		// The request URL carries the access token; never log/return it.
 		return nil, fmt.Errorf(
-			"social: graph api returned %d: %s", resp.StatusCode, string(body),
+			"social: graph api returned %d", resp.StatusCode,
 		)
 	}
 

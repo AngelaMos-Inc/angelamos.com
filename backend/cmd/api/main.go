@@ -12,10 +12,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-chi/chi/v5"
-
-	"github.com/carterperez-dev/templates/go-backend/internal/admin"
-	"github.com/carterperez-dev/templates/go-backend/internal/auth"
 	"github.com/carterperez-dev/templates/go-backend/internal/config"
 	"github.com/carterperez-dev/templates/go-backend/internal/contact"
 	"github.com/carterperez-dev/templates/go-backend/internal/core"
@@ -24,7 +20,6 @@ import (
 	"github.com/carterperez-dev/templates/go-backend/internal/middleware"
 	"github.com/carterperez-dev/templates/go-backend/internal/server"
 	"github.com/carterperez-dev/templates/go-backend/internal/social"
-	"github.com/carterperez-dev/templates/go-backend/internal/user"
 )
 
 const (
@@ -94,38 +89,18 @@ func run(configPath string) error {
 		"pool_size", cfg.Redis.PoolSize,
 	)
 
-	jwtManager, err := auth.NewJWTManager(cfg.JWT)
-	if err != nil {
-		return err
-	}
-	logger.Info("JWT manager initialized",
-		"algorithm", "ES256",
-		"key_id", jwtManager.GetKeyID(),
-	)
-
-	userRepo := user.NewRepository(db.DB)
-	userSvc := user.NewService(userRepo)
-	userHandler := user.NewHandler(userSvc)
-
-	authRepo := auth.NewRepository(db.DB)
-	authSvc := auth.NewService(authRepo, jwtManager, userSvc, redis.Client)
-	authHandler := auth.NewHandler(authSvc)
-
 	healthHandler := health.NewHandler(db, redis)
-
-	adminHandler := admin.NewHandler(admin.HandlerConfig{
-		DBStats:    db.Stats,
-		RedisStats: redis.PoolStats,
-		DBPing:     db.Ping,
-		RedisPing:  redis.Ping,
-	})
 
 	contactHandler := contact.NewHandler(contact.NewService(cfg.Contact))
 
 	socialClient := social.NewClient(cfg.Social)
 	socialService := social.NewService(socialClient, redis.Client)
 	socialHub := social.NewHub(socialService, redis.Client, logger)
-	socialPoller := social.NewPoller(socialService, cfg.Social.PollInterval, logger)
+	socialPoller := social.NewPoller(
+		socialService,
+		cfg.Social.PollInterval,
+		logger,
+	)
 	socialHandler := social.NewHandler(socialService)
 
 	ghubClient := ghub.NewClient(cfg.GitHub)
@@ -143,6 +118,7 @@ func run(configPath string) error {
 
 	router.Use(middleware.RequestID)
 	router.Use(middleware.Logger(logger))
+	router.Use(middleware.SecurityHeaders(cfg.App.Environment == "production"))
 	router.Use(
 		middleware.NewRateLimiter(redis.Client, middleware.RateLimitConfig{
 			Limit: middleware.PerMinute(
@@ -152,38 +128,25 @@ func run(configPath string) error {
 			FailOpen: true,
 		}).Handler,
 	)
-	router.Use(middleware.SecurityHeaders(cfg.App.Environment == "production"))
 	router.Use(middleware.CORS(cfg.CORS))
-
-	healthHandler.RegisterRoutes(router)
-
-	router.Get("/.well-known/jwks.json", jwtManager.GetJWKSHandler())
-	router.Get("/ws", socialHub.ServeWS)
-
-	authenticator := middleware.Authenticator(jwtManager)
-	adminOnly := middleware.RequireAdmin
 
 	contactLimiter := middleware.NewRateLimiter(
 		redis.Client,
 		middleware.RateLimitConfig{
-			Limit:    middleware.PerHour(5, 2),
-			KeyFunc:  middleware.KeyByIP,
-			FailOpen: true,
+			Namespace: "contact",
+			Limit:     middleware.PerHour(5, 2),
+			KeyFunc:   middleware.KeyByIP,
+			FailOpen:  false,
 		},
 	).Handler
 
-	router.Route("/v1", func(r chi.Router) {
-		authHandler.RegisterRoutes(r, authenticator)
-
-		r.Post("/users", authHandler.Register)
-
-		contactHandler.RegisterRoutes(r, contactLimiter)
-		socialHandler.RegisterRoutes(r)
-		ghubHandler.RegisterRoutes(r)
-
-		userHandler.RegisterRoutes(r, authenticator)
-		userHandler.RegisterAdminRoutes(r, authenticator, adminOnly)
-		adminHandler.RegisterRoutes(r, authenticator, adminOnly)
+	registerPublicRoutes(router, publicHandlers{
+		health:         healthHandler,
+		contact:        contactHandler,
+		contactLimiter: contactLimiter,
+		social:         socialHandler,
+		github:         ghubHandler,
+		websocket:      socialHub.ServeWS,
 	})
 
 	go socialHub.Run(ctx)

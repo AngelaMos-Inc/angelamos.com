@@ -66,7 +66,10 @@ func (s *Service) Refresh(ctx context.Context) error {
 		return fmt.Errorf("social: marshal stats: %w", err)
 	}
 
-	prev, _ := s.redis.Get(ctx, statsKey).Bytes()
+	prev, err := s.redis.Get(ctx, statsKey).Bytes()
+	if err != nil && !errors.Is(err, redis.Nil) {
+		return fmt.Errorf("social: read previous stats: %w", err)
+	}
 	if err := s.redis.Set(ctx, statsKey, data, 0).Err(); err != nil {
 		return fmt.Errorf("social: write cache: %w", err)
 	}

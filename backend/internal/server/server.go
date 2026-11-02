@@ -37,14 +37,19 @@ func New(cfg Config) *Server {
 
 	router.Use(chimw.CleanPath)
 	router.Use(chimw.StripSlashes)
+	router.Use(chimw.Recoverer)
+	router.NotFound(endpointNotFound)
+	router.MethodNotAllowed(methodNotAllowed)
 
 	return &Server{
 		httpServer: &http.Server{
-			Addr:         cfg.ServerConfig.Address(),
-			Handler:      router,
-			ReadTimeout:  cfg.ServerConfig.ReadTimeout,
-			WriteTimeout: cfg.ServerConfig.WriteTimeout,
-			IdleTimeout:  cfg.ServerConfig.IdleTimeout,
+			Addr:              cfg.ServerConfig.Address(),
+			Handler:           router,
+			ReadHeaderTimeout: 5 * time.Second,
+			MaxHeaderBytes:    16 << 10,
+			ReadTimeout:       cfg.ServerConfig.ReadTimeout,
+			WriteTimeout:      cfg.ServerConfig.WriteTimeout,
+			IdleTimeout:       cfg.ServerConfig.IdleTimeout,
 		},
 		router:        router,
 		config:        cfg.ServerConfig,

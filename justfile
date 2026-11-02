@@ -44,6 +44,14 @@ stylelint-fix:
 tsc *ARGS:
     cd frontend && pnpm tsc --noEmit {{ARGS}}
 
+[group('lint')]
+installer-check:
+    bash -n frontend/public/installers/catalog-v1.sh
+    shellcheck -S warning frontend/public/installers/catalog-v1.sh
+    rg --files-with-matches --null --fixed-strings '/installers/catalog-v1.sh' frontend/public --glob 'install.sh' | xargs -0 -r -n 1 bash -n
+    rg --files-with-matches --null --fixed-strings '/installers/catalog-v1.sh' frontend/public --glob 'install.sh' | xargs -0 -r shellcheck -S warning
+    cd frontend/public/installers && sha256sum --check catalog-v1.sh.sha256
+
 # =============================================================================
 # Backend (Go)
 # =============================================================================
